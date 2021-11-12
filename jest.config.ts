@@ -1,9 +1,9 @@
 import type { Config } from '@jest/types';
-import { defaults } from 'jest-config';
+// import { defaults } from 'jest-config';
 
 // https://jestjs.io/docs/en/configuration.html
 const config: Config.InitialOptions = {
-  moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'js'],
+  moduleFileExtensions: [ 'tsx', 'ts', 'js'],
   // overrides
   // https://kulshekhar.github.io/ts-jest/docs/options
   preset: 'ts-jest',
