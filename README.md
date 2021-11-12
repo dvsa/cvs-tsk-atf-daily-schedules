@@ -1,4 +1,4 @@
-# cvs-svc-template
+# cvs-tsk-atf-daily-schedules
 
 The template for CVS lambda services
 
