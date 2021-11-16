@@ -1,11 +1,6 @@
-# https://github.com/serverless/serverless/blob/master/docs/providers/aws/guide/functions.md
 service: cvs-tsk-atf-daily-schedules
 useDotenv: true
 
-# Create an optimized package for our Functions
-# This file has 2 purposes:
-# - used to mock API Gateway so that we can work locally (with serverless-offline)
-# - use webpack to bundle our code
 package:
   individually: true
   exclude:
@@ -15,21 +10,14 @@ package:
     - src/handler.ts
 
 plugins:
-  # .dotenv is not currently supported so we use this serverless plugin for env configuration
   - serverless-dotenv-plugin
-  # https://github.com/serverless-heaven/serverless-webpack/tree/master/examples
   - serverless-webpack
-  # - serverless-dynamodb-local
-  # https://github.com/serverless-heaven/serverless-webpack#usage-with-serverless-offline
   - serverless-offline
 
 provider:
   profile: ${env:AWS_PROVIDER_PROFILE, 'default'}
   name: aws
   runtime: nodejs14.x
-  apiGateway:
-    # https://www.serverless.com/framework/docs/deprecations/#LOAD_VARIABLES_FROM_ENV_FILES
-    shouldStartNameWithService: true
   stage: ${env:AWS_PROVIDER_STAGE, 'local'}
   region: ${env:AWS_PROVIDER_REGION, 'local'}
   # To load environment variables externally
@@ -42,20 +30,22 @@ provider:
     SERVICE: ${self:service}
 
 functions:
-  # Use express routing so we don't rely on APIG and leverage express API
-  app:
+  processWmsData:
     handler: src/handler.handler
     events:
-      - http: ANY /
-      # We will proxy version from here in the client to match the API specs e.g. <stage>/**/*/<service>
-      - http: 'ANY /{proxy+}'
-  # Can also define specific functions on exposed routes using pattern matching, see below as example:
-  # handler.ts containing exported getHello function is exposed on path /hello
-  # that you can test locally sls invoke local -f getHello -d '{"path": "hello"}' or with sls offline
-  # getHello:
-  #   handler: src/handler.getHello
-  #   events:
-  #     - http: 'GET /hello'
+      - http:
+          path: process-wms-data
+          method: get
+      - cloudwatchEvent:
+          event:
+            source:
+              - "aws.events"
+            detail-type:
+              - "Scheduled Event"
+            detail:
+              task:
+                - "processWmsData"
+      
 custom:
   dotenv:
     basePath: './config/'
