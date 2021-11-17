@@ -1,6 +1,5 @@
 import 'source-map-support/register';
-// import serverless from 'serverless-http';
-// import { Context, APIGatewayEvent } from 'aws-lambda';
+import { APIGatewayEvent } from 'aws-lambda';
 import { sendEvents } from './eventbridge/send';
 
 const {
@@ -11,21 +10,18 @@ console.log(
   `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_PROVIDER_STAGE}'\n region: '${AWS_PROVIDER_REGION}'\n\n`,
 );
 
-const handler = async (event: {
-  requestContext: { accountId: string };
-}): Promise<{ statusCode: number; body: string }> => {
-  console.log('event');
-  console.log(JSON.stringify(event, null, 2));
+const handler = async (event: APIGatewayEvent): Promise<{ statusCode: number; body: string }> => {
+  console.log(`Function triggered by event: ${event.httpMethod}`);
 
-  await sendEvents(event);
+  const tempData = { one: 1, two: 2 };
+  await sendEvents(tempData);
 
   return {
     statusCode: 200,
     body: JSON.stringify(
       {
-        message: 'Go Serverless v1.0! Your function execccuted successfully!',
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        input: event,
+        message: 'Data processed successfully.',
+        input: tempData,
       },
       null,
       2,
