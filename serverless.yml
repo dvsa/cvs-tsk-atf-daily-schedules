@@ -10,9 +10,9 @@ package:
     - src/handler.ts
 
 plugins:
-  - serverless-dotenv-plugin
   - serverless-webpack
   - serverless-offline
+  # - serverless-offline-aws-eventbridge
 
 provider:
   profile: ${env:AWS_PROVIDER_PROFILE, 'default'}
@@ -21,9 +21,8 @@ provider:
   stage: ${env:AWS_PROVIDER_STAGE, 'local'}
   region: ${env:AWS_PROVIDER_REGION, 'local'}
   # To load environment variables externally
-  # rename env.example to .env.local
+  # copy ./config/env.example to ./.env.local.
   # docs: https://github.com/serverless/serverless/blob/master/docs/providers/aws/guide/variables.md
-  # we use dotenv, docs: https://github.com/colynb/serverless-dotenv-plugin
   environment:
     SERVICE_VERSION: ${env:API_VERSION}
     AWS_PROVIDER_REGION: ${self:provider.region}
