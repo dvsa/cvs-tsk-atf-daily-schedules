@@ -1,32 +1,30 @@
 import AWS from 'aws-sdk';
 import EventEntry from './EventEntry';
-import EventParams from './EventParams';
+import Entries from './Entries';
 
 const eventbridge = new AWS.EventBridge();
 
-const sendEvents = async (event: { requestContext: { accountId: string } }): Promise<string> => {
-  const params: EventParams = {
+const sendEvents = async (event: { one: number, two: number }): Promise<void> => {
+  const params: Entries = {
     Entries: [],
   };
 
   const entry: EventEntry = {
-    Source: 'wms', // TODO: choose better source name.
-    Detail: JSON.stringify(event.requestContext.accountId),
-    DetailType: event.requestContext.accountId,
-    EventBusName: '?',
+    Source: process.env.AWS_EVENT_BUS_SOURCE,
+    Detail: JSON.stringify({ message: 'I\'m a message.' }),
+    DetailType: event.one.toString(),
+    EventBusName: process.env.AWS_EVENT_BUS_NAME,
     Time: new Date(),
   };
 
   params.Entries.push(entry);
   try {
-    await eventbridge.putEvents(params).promise();
+    const result = await eventbridge.putEvents(params).promise();
+    console.log(`${result.Entries.length} ${result.Entries.length === 1 ? 'event' : 'events'} sent to eventbridge.`);
   } catch (error) {
-    // Swallow error for the timebeing.
+    console.log(error);
+    throw error;
   }
-
-  console.log('Data: %j', event.requestContext.accountId);
-
-  return `Successfully processed ${event.requestContext.accountId} records.`;
 };
 
 export { sendEvents };
