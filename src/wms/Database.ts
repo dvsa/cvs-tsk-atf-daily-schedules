@@ -1,36 +1,38 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
-import { knex } from 'knex';
+import { Knex, knex } from 'knex';
 import dateformat from 'dateformat';
-import StaffSchedule from './StaffSchedule';
+import StaffSchedule from './Interfaces/StaffSchedule';
 
 export class Database {
-  private connection;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private connection: Knex<any, unknown[]>;
 
   constructor() {
     this.connection = knex({
       client: 'mysql',
       connection: {
-        host: 'localhost',
-        port: 3306,
-        user: 'root',
-        password: 'password',
-        database: 'wms',
+        host: process.env.WMS_HOST,
+        port: parseInt(process.env.WMS_PORT, 10),
+        user: process.env.WMS_USER,
+        password: process.env.WMS_PASSWORD,
+        database: process.env.WMS_SCHEMA,
       },
     });
   }
 
-  public get staffSchedules(): Array<StaffSchedule> {
-    return this.connection
-      .select('site_id', 'staff_id', 'status', 'event_date', 'event_start', 'event_end')
-      .where('event_date', '=', dateformat(new Date(), 'yyyy-mm-dd'))
-      .from<StaffSchedule>('EDH_WMS_STAGING');
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  public async getstaffSchedules() {
+    const query = await this.connection.select('ngt_site.site_id', 'ngt_staff.staff_id', 'status', 'event_date', 'event_start', 'event_end')
+      .from<StaffSchedule>('ngt_site_events')
+      .innerJoin('ngt_staff', 'ngt_site_events.staff_id', 'ngt_staff.id')
+      .innerJoin('ngt_site', 'ngt_site_events.site_id', 'ngt_site.id')
+      .where('event_date', '=', dateformat(new Date(), 'yyyy-mm-dd'));
+      // TODO: add filtrering for 5 vtfs
+      // .havingIn('ngt_site.site_id', [])
+    return (query as StaffSchedule[]);
   }
 
-  private set staffSchedules(schedules: Array<StaffSchedule>) {
-    this.staffSchedules = schedules;
+  public closeConnection(): Promise<void> {
+    return this.connection.destroy();
   }
 }
