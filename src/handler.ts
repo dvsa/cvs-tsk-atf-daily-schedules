@@ -1,6 +1,7 @@
 import 'source-map-support/register';
 import { APIGatewayEvent } from 'aws-lambda';
 import { sendEvents } from './eventbridge/send';
+import { getEvents } from './wms/ExportEvents';
 
 const {
   NODE_ENV, SERVICE, AWS_PROVIDER_REGION, AWS_PROVIDER_STAGE,
@@ -14,11 +15,13 @@ const handler = async (event: APIGatewayEvent): Promise<{ statusCode: number; bo
   console.log(`Function triggered by event: ${event.httpMethod}`);
 
   try {
-    const tempData = event.body as unknown as number;
-    await sendEvents(tempData);
+    await sendEvents(await getEvents());
+
+    console.log('Data processed successfully.');
     return { statusCode: 200, body: 'Data processed successfully.' };
   } catch (error) {
     console.error(error);
+
     return { statusCode: 500, body: 'Data processed unsuccessfully.' };
   }
 };
