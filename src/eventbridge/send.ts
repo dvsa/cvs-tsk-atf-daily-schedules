@@ -1,34 +1,44 @@
 import AWS from 'aws-sdk';
 import EventEntry from './EventEntry';
 import Entries from './Entries';
+import SendResponse from './SendResponse';
+import { FacillitySchedules } from '../wms/Interfaces/DynamicsCE';
 
 const eventbridge = new AWS.EventBridge();
-
-const sendEvents = async (event: number): Promise<number> => {
-  const params: Entries = {
-    Entries: [],
+const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse> => {
+  const sendResponse: SendResponse = {
+    SuccessCount: 0,
+    FailCount: 0,
   };
 
-  for (let i = 0; i < event; i++) {
+  for (let i = 0; i < schedules.length; i++) {
     const entry: EventEntry = {
       Source: process.env.AWS_EVENT_BUS_SOURCE,
-      Detail: JSON.stringify({ message: 'I\'m a message.' }),
-      DetailType: event.toString(),
+      // eslint-disable-next-line security/detect-object-injection
+      Detail: `{ "schedule": "${JSON.stringify(schedules[i])?.replace(/"/g, '\\"')}" }`,
+      DetailType: 'CVS ATF Daily Schedule',
       EventBusName: process.env.AWS_EVENT_BUS_NAME,
       Time: new Date(),
     };
 
+    const params: Entries = {
+      Entries: [],
+    };
     params.Entries.push(entry);
+
+    try {
+      // TODO Make the puEvents run in parallel?
+      // eslint-disable-next-line no-await-in-loop
+      const result = await eventbridge.putEvents(params).promise();
+      console.log(`${result.Entries.length} ${result.Entries.length === 1 ? 'event' : 'events'} sent to eventbridge.`);
+      sendResponse.SuccessCount++;
+    } catch (error) {
+      console.log(error);
+      sendResponse.FailCount++;
+    }
   }
 
-  try {
-    const result = await eventbridge.putEvents(params).promise();
-    console.log(`${result.Entries.length} ${result.Entries.length === 1 ? 'event' : 'events'} sent to eventbridge.`);
-    return result.Entries.length;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  return sendResponse;
 };
 
 export { sendEvents };

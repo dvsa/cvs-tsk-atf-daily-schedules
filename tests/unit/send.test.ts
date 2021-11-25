@@ -4,6 +4,8 @@ import {
   PutEventsResponse, PutEventsRequest, PutEventsResultEntry,
 } from 'aws-sdk/clients/eventbridge';
 import { sendEvents } from '../../src/eventbridge/send';
+import { FacillitySchedules } from '../../src/wms/Interfaces/DynamicsCE';
+import SendResponse from '../../src/eventbridge/SendResponse';
 
 jest.mock('aws-sdk', () => {
   const mEventBridgeInstance = {
@@ -31,7 +33,7 @@ mocked(mEventBridgeInstance.putEvents as PutEventsWithParams).mockImplementation
       FailedEntryCount: 0,
       Entries: Array<PutEventsResultEntry>(params.Entries.length),
     };
-    if (params.Entries.length === 6) {
+    if (params.Entries[0].Detail === '{ "schedule": "{\\"testfacilityid\\":\\"Error\\",\\"eventdate\\":\\"Now\\"}" }') {
       mResultInstance.promise = jest.fn().mockReturnValue(Promise.reject(new Error('Oh no!')));
     } else {
       mResultInstance.promise = jest.fn().mockReturnValue(Promise.resolve(mPutEventsResponse));
@@ -43,15 +45,23 @@ mocked(mEventBridgeInstance.putEvents as PutEventsWithParams).mockImplementation
 describe('Send events', () => {
   describe('Events sent', () => {
     it('GIVEN one event to send WHEN sent THEN one event is returned.', async () => {
-      await expect(sendEvents(1)).resolves.toEqual(1);
+      const mFacillitySchedules = Array<FacillitySchedules>(1);
+      const mSendResponse: SendResponse = { SuccessCount: 1, FailCount: 0 };
+      await expect(sendEvents(mFacillitySchedules)).resolves.toEqual(mSendResponse);
     });
 
     it('GIVEN two events to send WHEN sent THEN two events are returned.', async () => {
-      await expect(sendEvents(2)).resolves.toEqual(2);
+      const mFacillitySchedules = Array<FacillitySchedules>(2);
+      const mSendResponse: SendResponse = { SuccessCount: 2, FailCount: 0 };
+      await expect(sendEvents(mFacillitySchedules)).resolves.toEqual(mSendResponse);
     });
 
-    it('GIVEN an issue with eventbridge WHEN events are sent THEN an exception is thrown.', async () => {
-      await expect(sendEvents(6)).rejects.toEqual(new Error('Oh no!'));
+    it('GIVEN an issue with eventbridge WHEN 6 events are sent and 1 fails THEN the failure is in the response.', async () => {
+      const mFacillitySchedules = Array<FacillitySchedules>(6);
+      const errorFacillitySchedules: FacillitySchedules = { testfacilityid: 'Error', eventdate: 'Now' };
+      mFacillitySchedules[0] = errorFacillitySchedules;
+      const mSendResponse: SendResponse = { SuccessCount: 5, FailCount: 1 };
+      await expect(sendEvents(mFacillitySchedules)).resolves.toEqual(mSendResponse);
     });
   });
 });

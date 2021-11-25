@@ -1,5 +1,5 @@
 export default interface StaffSchedule {
-  site_id: string;
+  c_id: string;
   staff_id: number;
   status: string;
   event_date: string;
