@@ -26,8 +26,7 @@ export async function getEvents(): Promise<FacillitySchedules[]> {
     map.forEach((vsa, facilityId) => {
       facilitySchedules.find((f) => f.testfacilityid === facilityId).vsa = vsa;
     });
-  } catch (error) {
-    console.log(error);
+  } finally {
     database.closeConnection().catch((e) => { throw e; });
   }
 
