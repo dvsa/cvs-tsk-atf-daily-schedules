@@ -1,4 +1,4 @@
-export default interface SendResponse {
+export interface SendResponse {
   SuccessCount: number;
   FailCount: number;
 }

@@ -1,14 +1,16 @@
 import { APIGatewayEvent } from 'aws-lambda';
 import { mocked } from 'ts-jest/utils';
 import { handler } from '../../src/handler';
-import * as Utils from '../../src/utils';
+import { createMajorVersionNumber } from '../../src/utils';
 import { sendEvents } from '../../src/eventbridge/send';
-import SendResponse from '../../src/eventbridge/SendResponse';
+import { SendResponse } from '../../src/eventbridge/SendResponse';
 import { getEvents } from '../../src/wms/ExportEvents';
 import { FacillitySchedules } from '../../src/wms/Interfaces/DynamicsCE';
 
 jest.mock('../../src/eventbridge/send');
 jest.mock('../../src/wms/ExportEvents');
+jest.mock('../../src/utils');
+const mCreateMajorVersionNumber = mocked(createMajorVersionNumber, true);
 
 describe('Application entry', () => {
   let event: APIGatewayEvent;
@@ -16,7 +18,7 @@ describe('Application entry', () => {
 
   beforeEach(() => {
     event = { httpMethod: 'get' } as APIGatewayEvent;
-    jest.spyOn(Utils, 'createMajorVersionNumber').mockReturnValue('1');
+    mCreateMajorVersionNumber.mockReturnValue('1');
   });
 
   afterEach(() => {

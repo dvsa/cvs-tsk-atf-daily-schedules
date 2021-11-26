@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import knex, { Knex } from 'knex';
 import dateformat from 'dateformat';
-import StaffSchedule from './Interfaces/StaffSchedule';
+import { knex, Knex } from 'knex';
+import { StaffSchedule } from './Interfaces/StaffSchedule';
 
 export class Database {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

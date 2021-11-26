@@ -1,10 +1,10 @@
-import AWS from 'aws-sdk';
-import EventEntry from './EventEntry';
-import Entries from './Entries';
-import SendResponse from './SendResponse';
+import { EventBridge } from 'aws-sdk';
+import { EventEntry } from './EventEntry';
+import { Entries } from './Entries';
+import { SendResponse } from './SendResponse';
 import { FacillitySchedules } from '../wms/Interfaces/DynamicsCE';
 
-const eventbridge = new AWS.EventBridge();
+const eventbridge = new EventBridge();
 const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse> => {
   const sendResponse: SendResponse = {
     SuccessCount: 0,

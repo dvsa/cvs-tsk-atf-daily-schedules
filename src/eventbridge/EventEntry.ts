@@ -1,4 +1,4 @@
-export default interface EventEntry {
+export interface EventEntry {
   Source: string;
   EventBusName: string;
   DetailType: string;
