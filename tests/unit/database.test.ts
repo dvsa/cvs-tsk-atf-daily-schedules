@@ -1,4 +1,3 @@
-import dateformat from 'dateformat';
 import { knex, Knex } from 'knex';
 import { mocked } from 'ts-jest/utils';
 import { StaffSchedule } from '../../src/wms/Interfaces/StaffSchedule';
@@ -33,13 +32,17 @@ const database = new Database();
 describe('Database calls', () => {
   describe('getstaffSchedules', () => {
     it('GIVEN a call to getstaffSchedules WHEN everything works THEN staffSchedules are returned.', async () => {
+      jest
+        .spyOn(global.Date, 'now')
+        .mockImplementationOnce(
+          () => new Date('2021-10-10T11:02:28.637Z').valueOf(),
+        );
       const staffSchedules: StaffSchedule[] = await database.getstaffSchedules();
       expect(mKnex.select).toBeCalledWith('ngt_site.c_id', 'ngt_staff.staff_id', 'status', 'event_date', 'event_start', 'event_end');
       expect(mKnex.innerJoin).toBeCalledWith('ngt_staff', 'ngt_site_events.staff_id', 'ngt_staff.id');
       expect(mKnex.innerJoin).toBeCalledWith('ngt_site', 'ngt_site_events.site_id', 'ngt_site.id');
       expect(mKnex.from).toBeCalledWith('ngt_site_events');
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      expect(mKnex.where).toBeCalledWith('event_date', '=', dateformat(new Date(), 'yyyy-mm-dd'));
+      expect(mKnex.where).toBeCalledWith('event_date', '=', '2021-10-10');
       expect(staffSchedules).toHaveLength(1);
     });
 
