@@ -21,15 +21,7 @@ mDatabase.mockImplementation(
   () => mDatabaseImp,
 );
 
-jest.spyOn(global.console, 'error').mockImplementation(() => {});
-
 describe('Database calls', () => {
-  beforeEach(() => {
-  });
-
-  afterEach(() => {
-  });
-
   describe('getEvents', () => {
     it('GIVEN one schedule returned from database WHEN processed THEN one order is returned.', async () => {
       const schedules = await getEvents();
@@ -49,7 +41,7 @@ describe('Database calls', () => {
     });
 
     it('GIVEN a call to the database WHEN an error from the database occurs and close connection errors THEN getEvents returns an error.', async () => {
-      jest.spyOn(global.console, 'error').mockImplementation(() => {});
+      jest.spyOn(global.console, 'error').mockImplementationOnce(() => {});
       const error1 = new Error('Oh no 1!');
       const error2 = new Error('Oh no 2!');
       mDatabaseImp = ({
