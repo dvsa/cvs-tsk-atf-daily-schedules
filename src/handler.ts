@@ -15,11 +15,13 @@ const handler = async (event: APIGatewayEvent): Promise<{ statusCode: number; bo
   console.log(`Function triggered by event: ${event.httpMethod}`);
 
   try {
-    await sendEvents(await getEvents());
+    const facilitySchedules = await getEvents();
+    await sendEvents(facilitySchedules);
 
     console.log('Data processed successfully.');
     return { statusCode: 200, body: 'Data processed successfully.' };
   } catch (error) {
+    console.log('Data processed unsuccessfully.');
     console.error(error);
 
     return { statusCode: 500, body: 'Data processed unsuccessfully.' };
