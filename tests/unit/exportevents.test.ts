@@ -21,6 +21,8 @@ mDatabase.mockImplementation(
   () => mDatabaseImp,
 );
 
+jest.spyOn(global.console, 'error').mockImplementation(() => {});
+
 describe('Database calls', () => {
   beforeEach(() => {
   });
@@ -40,11 +42,14 @@ describe('Database calls', () => {
         getstaffSchedules: jest.fn().mockRejectedValue(error),
         closeConnection: jest.fn().mockImplementation(() => Promise.resolve()),
       });
-      const schedules = await getEvents();
-      expect(schedules).toHaveLength(0);
+
+      await getEvents().catch((err) => {
+        expect(err).toBe(error);
+      });
     });
 
     it('GIVEN a call to the database WHEN an error from the database occurs and close connection errors THEN getEvents returns an error.', async () => {
+      jest.spyOn(global.console, 'error').mockImplementation(() => {});
       const error1 = new Error('Oh no 1!');
       const error2 = new Error('Oh no 2!');
       mDatabaseImp = ({
@@ -53,7 +58,9 @@ describe('Database calls', () => {
       });
 
       await getEvents().catch((error) => {
-        expect(error).toBe(error2);
+        expect(console.error).toHaveBeenCalledTimes(1);
+        expect(console.error).toHaveBeenCalledWith(error2);
+        expect(error).toBe(error1);
       });
     });
   });
