@@ -1,5 +1,5 @@
-import EventEntry from './EventEntry';
+import { EventEntry } from './EventEntry';
 
-export default interface Entries {
+export interface Entries {
   Entries: EventEntry[]
 }

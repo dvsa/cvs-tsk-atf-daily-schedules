@@ -1,11 +1,9 @@
-import AWS from 'aws-sdk';
+import { EventBridge, Request } from 'aws-sdk';
 import { mocked } from 'ts-jest/utils';
-import {
-  PutEventsResponse, PutEventsRequest, PutEventsResultEntry,
-} from 'aws-sdk/clients/eventbridge';
+import { PutEventsResponse, PutEventsRequest, PutEventsResultEntry } from 'aws-sdk/clients/eventbridge';
 import { sendEvents } from '../../src/eventbridge/send';
 import { FacillitySchedules } from '../../src/wms/Interfaces/DynamicsCE';
-import SendResponse from '../../src/eventbridge/SendResponse';
+import { SendResponse } from '../../src/eventbridge/SendResponse';
 
 jest.mock('aws-sdk', () => {
   const mEventBridgeInstance = {
@@ -24,8 +22,8 @@ type PutEventsWithParams = (
   params: PutEventsRequest
 ) => AWS.Request<PutEventsResponse, AWS.AWSError>;
 
-const mEventBridgeInstance = new AWS.EventBridge();
-const mResultInstance = new AWS.Request<PutEventsResponse, AWS.AWSError>(null, null);
+const mEventBridgeInstance = new EventBridge();
+const mResultInstance = new Request<PutEventsResponse, AWS.AWSError>(null, null);
 // eslint-disable-next-line @typescript-eslint/unbound-method
 mocked(mEventBridgeInstance.putEvents as PutEventsWithParams).mockImplementation(
   (params: PutEventsRequest): AWS.Request<PutEventsResponse, AWS.AWSError> => {

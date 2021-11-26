@@ -1,4 +1,4 @@
-export default interface StaffSchedule {
+export interface StaffSchedule {
   c_id: string;
   staff_id: number;
   status: string;

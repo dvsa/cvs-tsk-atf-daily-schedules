@@ -1,4 +1,4 @@
-import StaffSchedule from '../Interfaces/StaffSchedule';
+import { StaffSchedule } from '../Interfaces/StaffSchedule';
 
 declare module 'knex/types/tables' {
   interface Tables {

@@ -1,7 +1,7 @@
-import knex, { Knex } from 'knex';
-import { mocked } from 'ts-jest/utils';
 import dateformat from 'dateformat';
-import StaffSchedule from '../../src/wms/Interfaces/StaffSchedule';
+import { knex, Knex } from 'knex';
+import { mocked } from 'ts-jest/utils';
+import { StaffSchedule } from '../../src/wms/Interfaces/StaffSchedule';
 import { Database } from '../../src/wms/Database';
 
 jest.mock('knex');
@@ -27,14 +27,10 @@ mknex.mockImplementation(
   () => mKnex,
 );
 
+// Needs to be created after all the knex mocking.
+const database = new Database();
+
 describe('Database calls', () => {
-  const database = new Database();
-  beforeEach(() => {
-  });
-
-  afterEach(() => {
-  });
-
   describe('getstaffSchedules', () => {
     it('GIVEN a call to getstaffSchedules WHEN everything works THEN staffSchedules are returned.', async () => {
       const staffSchedules: StaffSchedule[] = await database.getstaffSchedules();
