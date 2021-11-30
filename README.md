@@ -94,7 +94,7 @@ The following variables should be present in the `.env.<NODE_ENV>` file.
 - AWS_PROVIDER_REGION=eu-west-1
 - AWS_SERVER_PORT=3009
 - AWS_EVENT_BUS_NAME=default
-- AWS_EVENT_BUS_SOURCE=cvs.atf.daily.schedule
+- AWS_EVENT_BUS_SOURCE=eventSourceName
 - WMS_HOST=mysqlURL
 - WMS_PORT=3306
 - WMS_USER=mysqlUser
