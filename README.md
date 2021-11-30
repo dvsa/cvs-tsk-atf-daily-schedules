@@ -9,7 +9,7 @@ The project runs on node 10.x with typescript and serverless framework. For furt
 
 ## Running the project
 
-Once the dependencies are installed, you will be required to rename the `/config/env.example` file to `.env.local` as we use dotenv files for configuration for local local development for example. Further information about [variables](https://www.serverless.com/framework/docs/providers/aws/guide/variables/) and [environment variables](https://www.serverless.com/framework/docs/environment-variables/) with serverless.
+Once the dependencies are installed, you will be required to copy the `/config/env.example` file to `.env.local` in the root of the project. Further information about [variables](https://www.serverless.com/framework/docs/providers/aws/guide/variables/) and [environment variables](https://www.serverless.com/framework/docs/environment-variables/) with serverless.
 Please note that multiple `.env` files can be created per environments. Our current development environment is 'local'.
 
 The application runs on port `:3001` by default when no stage is provided.
@@ -86,6 +86,49 @@ For further information about debugging, please refer to the following documenta
 - [VSCode debugging](https://github.com/serverless-heaven/serverless-webpack#vscode-debugging)
 
 - [Debug process section](https://www.serverless.com/plugins/serverless-offline#usage-with-webpack)
+
+## Environmental variables
+
+The following variables should be present in the `.env.<NODE_ENV>` file.
+- AWS_PROVIDER_PROFILE=default
+- AWS_PROVIDER_REGION=eu-west-1
+- AWS_SERVER_PORT=3009
+- AWS_EVENT_BUS_NAME=default
+- AWS_EVENT_BUS_SOURCE=cvs.atf.daily.schedule
+- WMS_HOST=mysqlURL
+- WMS_PORT=3306
+- WMS_USER=mysqlUser
+- WMS_PASSWORD=password123
+- WMS_SCHEMA=databaseName
+- WMS_SSL_CERT=certificateName
+
+The WMS_ variables are used for connecting to mysql. There are three variations depending on where you are conecting to and the authenticate method.
+
+### Local mysql
+- WMS_HOST=mysqlURL
+- WMS_PORT=3306
+- WMS_USER=mysqlUser
+- WMS_PASSWORD=password123
+- WMS_SCHEMA=databaseName
+
+### Aurora mysql
+- WMS_HOST=mysqlURL
+- WMS_PORT=3306
+- WMS_USER=mysqlUser
+- WMS_PASSWORD=password123
+- WMS_SCHEMA=databaseName
+- WMS_SSL_CERT=certificateName
+
+Same as local, but need WMS_SSL_CERT
+
+### Aurora mysql with IAM authentication
+- WMS_HOST=mysqlURL
+- WMS_PORT=3306
+- WMS_USER=mysqlUser
+- WMS_SCHEMA=databaseName
+- WMS_SSL_CERT=certificateName
+
+Same as Aurora mysql, but missing WMS_PASSWORD. The code will get a token via RDS Signing. 
 
 ## Testing
 
