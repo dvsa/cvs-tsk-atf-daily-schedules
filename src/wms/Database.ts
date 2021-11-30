@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import dateformat from 'dateformat';
+import { Signer } from 'aws-sdk/clients/rds';
 import { knex, Knex } from 'knex';
 import { StaffSchedule } from './Interfaces/StaffSchedule';
 
@@ -8,16 +9,34 @@ export class Database {
   private connection?: Knex<any, unknown[]>;
 
   constructor() {
-    this.connection = knex({
-      client: 'mysql',
-      connection: {
-        host: process.env.WMS_HOST,
+    const config: Knex.MySql2ConnectionConfig = {
+      host: process.env.WMS_HOST,
+      port: parseInt(process.env.WMS_PORT, 10),
+      user: process.env.WMS_USER,
+      database: process.env.WMS_SCHEMA,
+      dateStrings: true,
+      ssl: process.env.WMS_SSL_CERT,
+    };
+
+    if (process.env.WMS_PASSWORD) {
+      config.password = process.env.WMS_PASSWORD;
+    } else {
+      const signer = new Signer();
+      const token = signer.getAuthToken({
+        region: process.env.AWS_PROVIDER_REGION,
+        hostname: process.env.WMS_HOST,
         port: parseInt(process.env.WMS_PORT, 10),
-        user: process.env.WMS_USER,
-        password: process.env.WMS_PASSWORD,
-        database: process.env.WMS_SCHEMA,
-        dateStrings: true,
-      },
+        username: process.env.WMS_USER,
+      });
+
+      config.authPlugins = {
+        mysql_clear_password: () => () => token,
+      };
+    }
+
+    this.connection = knex({
+      client: 'mysql2',
+      connection: config,
     });
   }
 

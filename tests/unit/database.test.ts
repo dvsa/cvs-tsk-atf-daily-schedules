@@ -3,6 +3,15 @@ import { mocked } from 'ts-jest/utils';
 import { StaffSchedule } from '../../src/wms/Interfaces/StaffSchedule';
 import { Database } from '../../src/wms/Database';
 
+jest.mock('aws-sdk/clients/rds', () => {
+  const mSignerInstance = {
+    getAuthToken: jest.fn().mockReturnValue('I am a token!'),
+  };
+  const mSigner = jest.fn(() => mSignerInstance);
+
+  return { Signer: mSigner };
+});
+
 jest.mock('knex');
 const mknex = mocked(knex, true);
 const ent = {
@@ -22,16 +31,18 @@ const mKnex = ({
 } as unknown) as Knex;
 
 mknex.mockImplementation(
-// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   () => mKnex,
 );
 
-// Needs to be created after all the knex mocking.
-const database = new Database();
-
 describe('Database calls', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('getstaffSchedules', () => {
     it('GIVEN a call to getstaffSchedules WHEN everything works THEN staffSchedules are returned.', async () => {
+      const database = new Database();
       jest
         .spyOn(global.Date, 'now')
         .mockImplementationOnce(
@@ -47,9 +58,36 @@ describe('Database calls', () => {
     });
 
     it('GIVEN a call to closeConnection WHEN everything works THEN we get no errors.', async () => {
+      const database = new Database();
       await database.closeConnection();
       // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mKnex.destroy).toBeCalledTimes(1);
+    });
+
+    it('GIVEN an IAM authenticated mysql setup WHEN the configuration is created THEN the config has the mysql_clear_password plugin.', async () => {
+      const database = new Database();
+      expect(mknex).toHaveBeenCalledWith({
+        client: 'mysql2',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        connection: expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          authPlugins: expect.anything(),
+        }),
+      });
+      await database.closeConnection();
+    });
+
+    it('GIVEN a password authenticated mysql setup WHEN the configuration is created THEN the config has the password variable.', async () => {
+      process.env.WMS_PASSWORD = 'I am a password!';
+      const database = new Database();
+      expect(mknex).toHaveBeenCalledWith({
+        client: 'mysql2',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        connection: expect.objectContaining({
+          password: 'I am a password!',
+        }),
+      });
+      await database.closeConnection();
     });
   });
 });
