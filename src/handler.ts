@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import 'source-map-support/register';
 import { ScheduledEvent } from 'aws-lambda';
@@ -19,7 +18,7 @@ const handler = async (event: ScheduledEvent): Promise<{ statusCode: number; bod
 
     let exportDate: Date;
     if (event?.detail?.exportDate) {
-      exportDate = getDateFromManualTrigger(event?.detail?.exportDate as string);
+      exportDate = getDateFromManualTrigger(event.detail.exportDate as string);
     } else {
       exportDate = new Date(Date.now());
     }
