@@ -39,7 +39,7 @@
     "build": "npm-run-all clean build:dev",
     "sonar-scanner": "sonar-scanner",
     "package:create": "cross-env NODE_ENV=local sls package --package .build",
-    "package:move": "mv ./.build/processWmsData.zip ./${env.BRANCH_NAME}.zip",
+    "package:move": "mv ./.build/processWmsData.zip ./${ZIP_NAME}.zip",
     "package": "npm run clean && npm run package:create && npm run package:move",
     "release": "semantic-release",
     "prerelease": "semantic-release --dry-run",
