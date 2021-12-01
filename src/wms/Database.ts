@@ -40,13 +40,13 @@ export class Database {
     });
   }
 
-  public async getstaffSchedules(): Promise<StaffSchedule[]> {
+  public async getstaffSchedules(exportDate: Date): Promise<StaffSchedule[]> {
     const query = await this.connection.select('ngt_site.c_id', 'ngt_staff.staff_id', 'status', 'event_date', 'event_start', 'event_end')
       .from<StaffSchedule>('ngt_site_events')
       .innerJoin('ngt_staff', 'ngt_site_events.staff_id', 'ngt_staff.id')
       .innerJoin('ngt_site', 'ngt_site_events.site_id', 'ngt_site.id')
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      .where('event_date', '=', dateformat(new Date(Date.now()), 'yyyy-mm-dd'));
+      .where('event_date', '=', dateformat(exportDate, 'yyyy-mm-dd'));
       // TODO: add filtrering for 5 vtfs
       // .havingIn('ngt_site.site_id', [])
     return (query as StaffSchedule[]);

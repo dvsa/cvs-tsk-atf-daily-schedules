@@ -32,9 +32,6 @@ functions:
   processWmsData:
     handler: src/handler.handler
     events:
-      - http:
-          path: process-wms-data
-          method: get
       - cloudwatchEvent:
           event:
             source:
