@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { mocked } from 'ts-jest/utils';
+import { ScheduledEvent } from 'aws-lambda';
 import { handler } from '../../src/handler';
 import { sendEvents } from '../../src/eventbridge/send';
 import { SendResponse } from '../../src/eventbridge/SendResponse';
@@ -12,11 +13,21 @@ jest.mock('../../src/wms/ExportEvents');
 jest.mock('../../src/utils');
 
 describe('Application entry', () => {
-  let event;
+  let event: ScheduledEvent;
   mocked(getEvents).mockResolvedValue(Array<FacillitySchedules>());
 
   beforeEach(() => {
-    event = { };
+    event = {
+      version: '0',
+      id: '0',
+      'detail-type': 'Scheduled Event',
+      source: '',
+      account: '',
+      time: '',
+      region: '',
+      resources: [],
+      detail: {},
+    };
   });
 
   afterEach(() => {
@@ -50,14 +61,14 @@ describe('Application entry', () => {
     });
 
     it('GIVEN a call to the function WHEN a date is passed in THEN the database is called with that date.', async () => {
-      event = { exportDate: '2021-11-11' };
+      event.detail = { exportDate: '2021-11-11' };
       await handler(event);
       expect(getEvents).toBeCalledWith(new Date('2021-11-11'));
     });
 
     it('GIVEN a call to the function WHEN an invalid date is passed in THEN an error is thrown.', async () => {
-      event = { exportDate: 'I am not a date!' };
-      const error = new Error(`Failed to manually trigger function. Invalid input date ${event.exportDate}`);
+      event.detail = { exportDate: 'I am not a date!' };
+      const error = new Error(`Failed to manually trigger function. Invalid input date ${event.detail.exportDate}`);
       await handler(event).catch((err) => {
         expect(console.error).toHaveBeenCalledTimes(1);
         expect(console.error).toHaveBeenCalledWith(error);

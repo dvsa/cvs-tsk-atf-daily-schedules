@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import 'source-map-support/register';
+import { ScheduledEvent } from 'aws-lambda';
 import { sendEvents } from './eventbridge/send';
 import { getEvents } from './wms/ExportEvents';
 
@@ -12,13 +13,13 @@ console.log(
   `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_PROVIDER_STAGE}'\n region: '${AWS_PROVIDER_REGION}'\n\n`,
 );
 
-const handler = async (event: any): Promise<{ statusCode: number; body: string }> => {
+const handler = async (event: ScheduledEvent): Promise<{ statusCode: number; body: string }> => {
   try {
     console.log(`Function triggered with '${JSON.stringify(event)}'.`);
 
     let exportDate: Date;
-    if (event?.exportDate) {
-      exportDate = getDateFromManualTrigger(event?.exportDate as string);
+    if (event?.detail?.exportDate) {
+      exportDate = getDateFromManualTrigger(event?.detail?.exportDate as string);
     } else {
       exportDate = new Date(Date.now());
     }
