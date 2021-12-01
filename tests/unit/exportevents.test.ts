@@ -21,10 +21,12 @@ mDatabase.mockImplementation(
   () => mDatabaseImp,
 );
 
-describe('Database calls', () => {
+const exportDate = new Date('2021-10-10T10:10:10.000Z');
+
+describe('Export events', () => {
   describe('getEvents', () => {
     it('GIVEN one schedule returned from database WHEN processed THEN one order is returned.', async () => {
-      const schedules = await getEvents();
+      const schedules = await getEvents(exportDate);
       expect(schedules).toHaveLength(1);
     });
 
@@ -35,7 +37,7 @@ describe('Database calls', () => {
         closeConnection: jest.fn().mockImplementation(() => Promise.resolve()),
       });
 
-      await getEvents().catch((err) => {
+      await getEvents(exportDate).catch((err) => {
         expect(err).toBe(error);
       });
     });
@@ -49,7 +51,7 @@ describe('Database calls', () => {
         closeConnection: jest.fn().mockImplementation(() => Promise.reject(error2)),
       });
 
-      await getEvents().catch((error) => {
+      await getEvents(exportDate).catch((error) => {
         expect(console.error).toHaveBeenCalledTimes(1);
         expect(console.error).toHaveBeenCalledWith(error2);
         expect(error).toBe(error1);
