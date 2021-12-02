@@ -3,6 +3,7 @@ import 'source-map-support/register';
 import { ScheduledEvent } from 'aws-lambda';
 import { sendEvents } from './eventbridge/send';
 import { getEvents } from './wms/ExportEvents';
+import logger from './observability/logger';
 
 const {
   NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE,
@@ -26,11 +27,11 @@ const handler = async (event: ScheduledEvent): Promise<{ statusCode: number; bod
     const facilitySchedules = await getEvents(exportDate);
     await sendEvents(facilitySchedules);
 
-    console.log('Data processed successfully.');
+    logger.info('Data processed successfully.');
     return { statusCode: 200, body: 'Data processed successfully.' };
   } catch (error) {
-    console.log('Data processed unsuccessfully.');
-    console.error(error);
+    logger.info('Data processed unsuccessfully.');
+    logger.error('', error);
 
     return { statusCode: 500, body: 'Data processed unsuccessfully.' };
   }
