@@ -3,6 +3,7 @@ import { EventEntry } from './EventEntry';
 import { Entries } from './Entries';
 import { SendResponse } from './SendResponse';
 import { FacillitySchedules } from '../wms/Interfaces/DynamicsCE';
+import logger from '../observability/logger';
 
 const eventbridge = new EventBridge();
 const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse> => {
@@ -34,10 +35,10 @@ const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse
       // TODO Make the putEvents run in parallel?
       // eslint-disable-next-line no-await-in-loop
       const result = await eventbridge.putEvents(params).promise();
-      console.log(`${result.Entries.length} ${result.Entries.length === 1 ? 'event' : 'events'} sent to eventbridge.`);
+      logger.info(`${result.Entries.length} ${result.Entries.length === 1 ? 'event' : 'events'} sent to eventbridge.`);
       sendResponse.SuccessCount++;
     } catch (error) {
-      console.log(error);
+      logger.error('', error);
       sendResponse.FailCount++;
     }
   }
