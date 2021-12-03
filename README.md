@@ -91,7 +91,7 @@ For further information about debugging, please refer to the following documenta
 
 The following variables should be present in the `.env.<NODE_ENV>` file.
 - AWS_PROVIDER_PROFILE=default
-- AWS_PROVIDER_REGION=eu-west-1
+- AWS_REGION=eu-west-1
 - AWS_SERVER_PORT=3009
 - AWS_EVENT_BUS_NAME=default
 - AWS_EVENT_BUS_SOURCE=eventSourceName
