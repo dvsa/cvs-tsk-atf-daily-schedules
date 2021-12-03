@@ -5,6 +5,8 @@ import { Database } from './Database';
 import { FacillitySchedules, Vsa } from './Interfaces/DynamicsCE';
 
 export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]> {
+  console.info('getEvents starting');
+
   const database = new Database();
 
   const map = new Map<string, Vsa[]>();
@@ -30,6 +32,8 @@ export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]>
     database.closeConnection().catch((e) => { console.error(e); });
     throw error;
   }
+
+  console.info('getEvents ending');
 
   return facilitySchedules;
 }

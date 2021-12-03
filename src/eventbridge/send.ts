@@ -6,6 +6,9 @@ import { FacillitySchedules } from '../wms/Interfaces/DynamicsCE';
 
 const eventbridge = new EventBridge();
 const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse> => {
+  console.info('sendEvents starting');
+  console.info(`${schedules.length} ${schedules.length === 1 ? 'event' : 'events'} ready to send to eventbridge.`);
+
   const sendResponse: SendResponse = {
     SuccessCount: 0,
     FailCount: 0,
@@ -27,7 +30,8 @@ const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse
     params.Entries.push(entry);
 
     try {
-      // TODO Make the puEvents run in parallel?
+      console.debug(`event about to be sent: ${JSON.stringify(params)}`);
+      // TODO Make the putEvents run in parallel?
       // eslint-disable-next-line no-await-in-loop
       const result = await eventbridge.putEvents(params).promise();
       console.log(`${result.Entries.length} ${result.Entries.length === 1 ? 'event' : 'events'} sent to eventbridge.`);
@@ -37,6 +41,8 @@ const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse
       sendResponse.FailCount++;
     }
   }
+
+  console.info('sendEvents ending');
 
   return sendResponse;
 };
