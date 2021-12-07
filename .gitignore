@@ -33,6 +33,7 @@ jspm_packages
 
 # env files
 *.env*
+!.env.example
 
 # Coverage reports
 coverage
