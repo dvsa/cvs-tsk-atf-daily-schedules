@@ -1,27 +1,22 @@
 # cvs-tsk-atf-daily-schedules
 
-The template for CVS lambda services
+Service for extracting ATF daily schedules and importing into DynamicsCE via AWS EventBridge.
 
 ## Dependencies
 
-The project runs on node 10.x with typescript and serverless framework. For further details about project dependencies, please refer to the `package.json` file.
-[nvm](https://github.com/nvm-sh/nvm/blob/master/README.md) is used to managed node versions and configuration explicitly done per project using an `.npmrc` file.
+The project runs on node 14.x with typescript and serverless framework. For further details about project dependencies, please refer to the `package.json` file.
+[nvm](https://github.com/nvm-sh/nvm/blob/master/README.md) is used to manage node versions and configuration is per project using an `.npmrc` file.
 
 ## Running the project
 
-Once the dependencies are installed, you will be required to copy the `/config/env.example` file to `.env.local` in the root of the project. Further information about [variables](https://www.serverless.com/framework/docs/providers/aws/guide/variables/) and [environment variables](https://www.serverless.com/framework/docs/environment-variables/) with serverless.
-Please note that multiple `.env` files can be created per environments. Our current development environment is 'local'.
+Before running the project, the dependencies need to be installed using `npm install`. Once the dependencies are installed, you will be required to copy the `.env.example` file to `.env.local` in the root of the project. Further information about [variables](https://www.serverless.com/framework/docs/providers/aws/guide/variables/) and [environment variables](https://www.serverless.com/framework/docs/environment-variables/) with serverless.
+Please note that multiple `.env` files can be created, one per environment. Our current development environment is 'local'.
 
-The application runs on port `:3001` by default when no stage is provided.
-
-To get started, please change the meta data of your `package.json` and `serverless.yml` file accordingly as well as base api route for your express router.
-The router is currently being mounted in the following file `src/infrastructure/api/index.ts`.
-
-The service has local environmental variables (please see `env` placeholder file) set locally however should we wish to further extend the service, the environmental variables will need to be ported over to the CI/CD pipeline which currently uses `BRANCH` and `BUCKET`.
+The application runs on port `:3002` by default.
 
 ### Environments
 
-We use `NODE_ENV` environment variable to set multi-stage builds (region, stages) with the help of dotenv through npm scripts to load the relevant `.env.<NODE_ENV>` file from `./config` folder into the `serverless.yml` file as we don't rely on serverless for deployment.
+We use `NODE_ENV` environment variable to set multi-stage builds (region, stages) through npm scripts to load the relevant `.env.<NODE_ENV>` file from the root folder into the `serverless.yml` file as we don't rely on serverless for deployment.
 If no `NODE_ENV` value is provided when running the scripts, it will default its `NODE_ENV` value to 'development' with the `.env.development` config file.
 
 The defaulted values for 'stage' and 'region' are `'local'`. Please refer to the values provided in the `serverless.yml` file.
@@ -29,10 +24,10 @@ The defaulted values for 'stage' and 'region' are `'local'`. Please refer to the
 The following values can be provided when running the scripts with `NODE_ENV`:
 
 ```ts
-// ./config/.env.<NODE_ENV> files
+// ./.env.<NODE_ENV> files
 'local'; // used for local development
 'development'; // used development staging should we wish to require external services
-'test'; // used during test scripts where local services, mocks can be used in conjonction
+'test'; // used during test scripts where local services, mocks can be used in conjunction
 ```
 
 ```ts
@@ -43,41 +38,37 @@ NODE_ENV=local serverless offline
 
 ```
 
-Further details about environment setup can be found in the provided documentation and `env.example` file.
+Further details about environment setup can be found in the provided documentation and `.env.example` file.
 
-All secrets the secrets are will stored in `AWS Secrets Manager`.
+All secrets will stored in `AWS Secrets Manager`.
 
 ### Scripts
 
 The following scripts are available, for further information please refer to the project `package.json` file:
 
 - <b>start</b>: `npm start` - _launch serverless offline service_
-- <b>dev</b>: `npm run dev` - _run in parallel the service and unit tests in_ `--watch` _mode with live reload_.
+- <b>dev</b>: `npm run dev` - _run in parallel, the service and unit tests in_ `--watch` _mode with live reload_.
 - <b>test</b>: `npm t` - _execute the unit test suite_
-- <b>build</b>: `npm run build` - _bundle the project for production_
-- <b>production build</b>: `npm run build:production` - _generate the project with bundled libraries, minified, concatenated code_
+- <b>build</b>: `npm run build` - _build the project, transpiling typescript to javascript_
+- <b>production build</b>: `npm run package` - _generate the project zip file ready for deployment_
 
 ### Offline
 
-Serverless-offline with webpack is used to run the project locally. Please use `npm run dev` script to do so. Go to `http://localhost:3001/local/version` to confirm that everything has loaded correctly, you should see that the version is the same as the version in the `package.json`
-
-The below routes are available as default routes from this scaffolding
+Serverless-offline is used to run the project locally. Use `npm run start` script to do so. The endpoints below are available.
 
 ```
-(GET) http://localhost:3009/local-stage/version
-(GET) http://localhost:3009/local-stage/*/service-name/
-(POST) http://localhost:3009/local-stage/*/service-name/:id/something
+(POST) http://localhost:3002/2015-03-31/functions/cvs-tsk-atf-daily-schedules-local-processWmsData/invocations
+(POST) http://localhost:3002/2014-11-13/functions/cvs-tsk-atf-daily-schedules-local-processWmsData/invoke-async/
 ```
 
-### Lambda locally
-
-Serverless can invoke lambda functions locally which provide a close experience to the real service if you decide not use the offline mode. `events` and `paths` can be found under `/local` folder.
-For further details using lambda locally please refer to the [serverless documentation](https://www.serverless.com/framework/docs/providers/aws/cli-reference/invoke-local/).
+When no payload is sent to the function, the daily schedules for the current day are retrieved. To specify a different date, a payload can be sent to the function as shown below.
+```json
+{ "detail": { "exportDate": "2021-11-29" } }
+```
 
 ### Debugging
 
-Existing configuration to debug the running service has been made available for vscode, please refer to `.vscode/launch.json` file. Serverless offline will be available on port `:4000`. 2 jest configurations are also provided which will allow to run a test or multiple tests.
-Should you wish to change the ports when debugging, please change the config args accordingly.
+Existing configuration to debug the running service has been made available for vscode, please refer to `.vscode/launch.json`. Two jest configurations are also provided which will allow debugging a test or multiple tests.
 
 For further information about debugging, please refer to the following documentation:
 
@@ -89,7 +80,7 @@ For further information about debugging, please refer to the following documenta
 
 ## Environmental variables
 
-The following variables should be present in the `.env.<NODE_ENV>` file.
+The following variables are supported in the `.env.<NODE_ENV>` file.
 - AWS_PROVIDER_PROFILE=default
 - AWS_REGION=eu-west-1
 - AWS_SERVER_PORT=3009
@@ -102,7 +93,7 @@ The following variables should be present in the `.env.<NODE_ENV>` file.
 - WMS_SCHEMA=databaseName
 - WMS_SSL_CERT=certificateName
 
-The WMS_ variables are used for connecting to mysql. There are three variations depending on where you are conecting to and the authenticate method.
+The WMS_ variables are used for connecting to mysql. There are three variations depending on where you are connecting to and the authenticate method.
 
 ### Local mysql
 - WMS_HOST=mysqlURL
@@ -132,20 +123,15 @@ Same as Aurora mysql, but missing WMS_PASSWORD. The code will get a token via RD
 
 ## Testing
 
-[json-serverless](https://github.com/pharindoko/json-serverless) has been added to the repository should we wish to mock external services during development and can be used in conjunction with the `test` environment.
-
 ### Unit
 
-Jest is used for unit testing.
-Please refer to the [Jest documentation](https://jestjs.io/docs/en/getting-started) for further details.
+Jest is used for unit testing. Jest mocks have been added for external services and other dependencies when needed. Debugging tests is possible using the two options configured in ./vscode/launch.json `Jest Debug all tests` and `Jest Debug opened file`. Using the Jest vscode extension is also a very good option. Please refer to the [Jest documentation](https://jestjs.io/docs/en/getting-started) for further details.
 
 ### Integration
 
-To be added and customised depending on needs, supertest is used but we could be looking at other packages such as nock, ts-mockito, typemoq, wiremock, etc.. or testing (pactjs, hoverfly, mockserver, etc..)
+TBC
 
 ## Infrastructure
-
-<Insert Design>
 
 ### Release
 
@@ -188,14 +174,6 @@ type(scope?): subject
 ```
 
 ### Code standards
-
-#### Code structure
-
-Domain Drive Design diagram with Interfaces, Application, Domain layers and Infrastructure across the layers.
-
-<p align="center">
-  <img src="./docs/DDD_architecture.jpg" alt="Domain Drive Design diagram with Interfaces, Application, Domain layers and Infrastructure across the layers" >
-</p>
 
 #### Toolings
 
