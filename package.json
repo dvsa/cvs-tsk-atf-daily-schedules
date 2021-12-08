@@ -2,7 +2,7 @@
   "name": "cvs-tsk-atf-daily-schedules",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "src/handler.ts",
   "engines": {
     "node": "14.*",
     "npm": "6.*"

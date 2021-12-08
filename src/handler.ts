@@ -5,11 +5,11 @@ import { sendEvents } from './eventbridge/send';
 import { getEvents } from './wms/ExportEvents';
 
 const {
-  NODE_ENV, SERVICE, AWS_REGION, AWS_PROVIDER_STAGE,
+  NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE,
 } = process.env;
 
 console.log(
-  `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_PROVIDER_STAGE}'\n region: '${AWS_REGION}'\n\n`,
+  `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n\n`,
 );
 
 const handler = async (event: ScheduledEvent): Promise<{ statusCode: number; body: string }> => {
