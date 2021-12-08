@@ -18,7 +18,7 @@ provider:
   profile: ${env:AWS_PROVIDER_PROFILE, 'default'}
   name: aws
   runtime: nodejs14.x
-  stage: ${env:AWS_PROVIDER_STAGE, 'local'}
+  stage: ${env:NODE_ENV, 'local'}
   region: ${env:AWS_REGION, 'local'}
   # To load environment variables externally
   # copy ./config/env.example to ./.env.local.
@@ -26,6 +26,7 @@ provider:
   environment:
     SERVICE_VERSION: ${env:API_VERSION}
     AWS_REGION: ${self:provider.region}
+    AWS_STAGE: ${self:provider.stage}
     SERVICE: ${self:service}
 
 functions:

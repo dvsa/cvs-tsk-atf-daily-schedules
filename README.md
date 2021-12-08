@@ -16,8 +16,8 @@ The application runs on port `:3002` by default.
 
 ### Environments
 
-We use `NODE_ENV` environment variable to set multi-stage builds (region, stages) through npm scripts to load the relevant `.env.<NODE_ENV>` file from the root folder into the `serverless.yml` file as we don't rely on serverless for deployment.
-If no `NODE_ENV` value is provided when running the scripts, it will default its `NODE_ENV` value to 'development' with the `.env.development` config file.
+We use `NODE_ENV` environment variable to set the stage. `NODE_ENV` is set through npm scripts (package.json) to load the relevant `.env.<NODE_ENV>` file from the root folder into the `serverless.yml`.
+If no `NODE_ENV` value is provided when running the scripts, it will default its `NODE_ENV` value to 'local' with the `.env.local` config file.
 
 The defaulted values for 'stage' and 'region' are `'local'`. Please refer to the values provided in the `serverless.yml` file.
 
