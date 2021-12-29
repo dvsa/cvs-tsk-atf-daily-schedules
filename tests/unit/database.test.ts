@@ -2,6 +2,7 @@ import { knex, Knex } from 'knex';
 import { mocked } from 'ts-jest/utils';
 import { StaffSchedule } from '../../src/wms/Interfaces/StaffSchedule';
 import { Database } from '../../src/wms/Database';
+import { getSecret } from '../../src/filterUtils';
 
 jest.mock('aws-sdk/clients/rds', () => {
   const mSignerInstance = {
@@ -11,6 +12,8 @@ jest.mock('aws-sdk/clients/rds', () => {
 
   return { Signer: mSigner };
 });
+
+jest.mock('../../src/filterUtils');
 
 jest.mock('knex');
 const mknex = mocked(knex, true);
@@ -26,7 +29,8 @@ const mKnex = ({
   select: jest.fn().mockReturnThis(),
   innerJoin: jest.fn().mockReturnThis(),
   from: jest.fn().mockReturnThis(),
-  where: jest.fn(() => [ent]),
+  where: jest.fn().mockReturnThis(),
+  havingIn: jest.fn(() => [ent]),
   destroy: jest.fn().mockResolvedValue('destroyed'),
 } as unknown) as Knex;
 
@@ -45,17 +49,23 @@ describe('Database calls', () => {
   describe('getstaffSchedules', () => {
     it('GIVEN a call to getstaffSchedules WHEN everything works THEN staffSchedules are returned.', async () => {
       const database = new Database();
+
+      const filters: string[] = new Array<string>('100', '101');
+      mocked(getSecret).mockResolvedValue(filters);
+
       jest
         .spyOn(global.Date, 'now')
         .mockImplementationOnce(
           () => new Date('2021-10-10T11:02:28.637Z').valueOf(),
         );
+
       const staffSchedules: StaffSchedule[] = await database.getstaffSchedules(exportDate);
       expect(mKnex.select).toBeCalledWith('ngt_site.c_id', 'ngt_staff.staff_id', 'status', 'event_date', 'event_start', 'event_end');
       expect(mKnex.innerJoin).toBeCalledWith('ngt_staff', 'ngt_site_events.staff_id', 'ngt_staff.id');
       expect(mKnex.innerJoin).toBeCalledWith('ngt_site', 'ngt_site_events.site_id', 'ngt_site.id');
       expect(mKnex.from).toBeCalledWith('ngt_site_events');
       expect(mKnex.where).toBeCalledWith('event_date', '=', '2021-10-10');
+      expect(mKnex.havingIn).toBeCalledWith('ngt_site.c_id', ['100', '101']);
       expect(staffSchedules).toHaveLength(1);
     });
 
