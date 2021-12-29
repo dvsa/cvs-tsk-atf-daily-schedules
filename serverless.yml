@@ -1,17 +1,9 @@
 service: cvs-tsk-atf-daily-schedules
 useDotenv: true
 
-package:
-  individually: true
-  exclude:
-    - node_modules/**
-    - .build/**
-  include:
-    - src/handler.ts
-
 plugins:
-  - serverless-webpack
   - serverless-offline
+  - serverless-plugin-typescript
   # - serverless-offline-aws-eventbridge
 
 provider:
@@ -21,8 +13,7 @@ provider:
   stage: ${env:NODE_ENV, 'local'}
   region: ${env:AWS_REGION, 'local'}
   # To load environment variables externally
-  # copy ./config/env.example to ./.env.local.
-  # docs: https://github.com/serverless/serverless/blob/master/docs/providers/aws/guide/variables.md
+  # copy ./.env.example to ./.env.local.
   environment:
     SERVICE_VERSION: ${env:API_VERSION}
     AWS_REGION: ${self:provider.region}
@@ -45,14 +36,6 @@ functions:
       
 custom:
   dotenv:
-    basePath: './config/'
-  webpack:
-    webpackConfig: './scripts/webpack.config.js'
-    keepOutputDirectory: true
-    # can be toggled depending on env and .env files configuration
-    includeModules: true # Node modules configuration for packaging, TBC whether we need the node_modules or 'inject' them when hosted on S3
-    packager: 'npm' # Packager that will be used to package your external modules
-    excludeFiles: src/**/*.test.js # Provide a glob for files to ignore
-  # https://www.serverless.com/plugins/serverless-offline#usage-with-webpack - See Usage and command line options
+    basePath: './'
   serverless-offline:
     httpPort: ${env:AWS_SERVER_PORT, 3001}
