@@ -14,21 +14,12 @@ const config: Config.InitialOptions = {
     //TODO Add for integration
     '**/?(*.)+(spec|test).[tj]s?(x)',
   ],
-  testPathIgnorePatterns: [
-    '/.build/',
-  ],
+  testPathIgnorePatterns: ['/.build/'],
   collectCoverage: false,
   collectCoverageFrom: ['src/**/*.{js,ts}', '!**/node_modules/**'],
   //TODO Add for integration
   coverageDirectory: 'coverage/unit',
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '/coverage/',
-    '/.build/',
-    '/.serverless/',
-    '/reports/',
-    '/.artifact/',
-  ],
+  coveragePathIgnorePatterns: ['/node_modules/', '/coverage/', '/.build/', '/.serverless/', '/reports/', '/.artifact/'],
   coverageThreshold: {
     global: {
       branches: 80,
