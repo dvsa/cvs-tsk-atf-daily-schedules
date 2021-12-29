@@ -14,6 +14,10 @@ Please note that multiple `.env` files can be created, one per environment. Our 
 
 The application runs on port `:3002` by default.
 
+## Packaging the project locally
+
+The `package` npm script takes a ZIP_NAME variable. To set the variable when running manually use `ZIP_NAME=zipName npm run package`. This will produce a file called zipName.zip.
+
 ### Environments
 
 We use `NODE_ENV` environment variable to set the stage. `NODE_ENV` is set through npm scripts (package.json) to load the relevant `.env.<NODE_ENV>` file from the root folder into the `serverless.yml`.
@@ -69,14 +73,6 @@ When no payload is sent to the function, the daily schedules for the current day
 ### Debugging
 
 Existing configuration to debug the running service has been made available for vscode, please refer to `.vscode/launch.json`. Two jest configurations are also provided which will allow debugging a test or multiple tests.
-
-For further information about debugging, please refer to the following documentation:
-
-- [Run-a-function-locally-on-source-changes](https://github.com/serverless-heaven/serverless-webpack#run-a-function-locally-on-source-changes)
-
-- [VSCode debugging](https://github.com/serverless-heaven/serverless-webpack#vscode-debugging)
-
-- [Debug process section](https://www.serverless.com/plugins/serverless-offline#usage-with-webpack)
 
 ## Environmental variables
 
