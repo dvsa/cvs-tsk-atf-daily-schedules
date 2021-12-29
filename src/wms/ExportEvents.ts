@@ -16,11 +16,17 @@ export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]>
     const schedules = await database.getstaffSchedules(exportDate);
     schedules.forEach((schedule) => {
       const vsa: Vsa = {
-        status: schedule.status, testerid: schedule.staff_id, enddate: dateformat(new Date(`${schedule.event_date}T${schedule.event_end}`), 'yyyy-mm-dd\'T\'HH:MM:ss.l\'Z\''), startdate: dateformat(new Date(`${schedule.event_date}T${schedule.event_start}`), 'yyyy-mm-dd\'T\'HH:MM:ss.l\'Z\''),
+        status: schedule.status,
+        testerid: schedule.staff_id,
+        enddate: dateformat(new Date(`${schedule.event_date}T${schedule.event_end}`), "yyyy-mm-dd'T'HH:MM:ss.l'Z'"),
+        startdate: dateformat(new Date(`${schedule.event_date}T${schedule.event_start}`), "yyyy-mm-dd'T'HH:MM:ss.l'Z'"),
       };
       if (!map.has(schedule.c_id)) {
         map.set(schedule.c_id, []);
-        facilitySchedules.push({ testfacilityid: schedule.c_id, eventdate: dateformat(new Date(schedule.event_date), 'yyyy-mm-dd\'T\'HH:MM:ss.l\'Z\'') });
+        facilitySchedules.push({
+          testfacilityid: schedule.c_id,
+          eventdate: dateformat(new Date(schedule.event_date), "yyyy-mm-dd'T'HH:MM:ss.l'Z'"),
+        });
       }
       map.get(schedule.c_id).push(vsa);
     });
@@ -29,7 +35,9 @@ export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]>
       facilitySchedules.find((f) => f.testfacilityid === facilityId).vsa = vsa;
     });
   } catch (error) {
-    database.closeConnection().catch((e) => { console.error(e); });
+    database.closeConnection().catch((e) => {
+      console.error(e);
+    });
     throw error;
   }
 
