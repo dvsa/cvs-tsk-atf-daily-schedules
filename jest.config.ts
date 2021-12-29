@@ -14,6 +14,9 @@ const config: Config.InitialOptions = {
     //TODO Add for integration
     '**/?(*.)+(spec|test).[tj]s?(x)',
   ],
+  testPathIgnorePatterns: [
+    '/.build/',
+  ],
   collectCoverage: false,
   collectCoverageFrom: ['src/**/*.{js,ts}', '!**/node_modules/**'],
   //TODO Add for integration
@@ -21,7 +24,6 @@ const config: Config.InitialOptions = {
   coveragePathIgnorePatterns: [
     '/node_modules/',
     '/coverage/',
-    '/.webpack/',
     '/.build/',
     '/.serverless/',
     '/reports/',
