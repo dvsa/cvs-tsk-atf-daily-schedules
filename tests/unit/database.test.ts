@@ -60,7 +60,14 @@ describe('Database calls', () => {
         );
 
       const staffSchedules: StaffSchedule[] = await database.getstaffSchedules(exportDate);
-      expect(mKnex.select).toBeCalledWith('ngt_site.c_id', 'ngt_staff.staff_id', 'status', 'event_date', 'event_start', 'event_end');
+      expect(mKnex.select).toBeCalledWith(
+        'ngt_site.c_id',
+        'ngt_staff.staff_id',
+        'status',
+        'event_date',
+        'event_start',
+        'event_end',
+      );
       expect(mKnex.innerJoin).toBeCalledWith('ngt_staff', 'ngt_site_events.staff_id', 'ngt_staff.id');
       expect(mKnex.innerJoin).toBeCalledWith('ngt_site', 'ngt_site_events.site_id', 'ngt_site.id');
       expect(mKnex.from).toBeCalledWith('ngt_site_events');
