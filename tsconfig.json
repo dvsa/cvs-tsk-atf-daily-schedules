@@ -18,10 +18,8 @@
   "exclude": [
     "node_modules/**/*",
     ".serverless/**/*",
-    ".webpack/**/*",
     ".build/**/*",
     ".artifact/**/*",
-    "_warmup/**/*",
     ".vscode/**/*",
     "reports/**/*"
   ]
