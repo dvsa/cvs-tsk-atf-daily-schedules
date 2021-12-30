@@ -53,11 +53,7 @@ describe('Database calls', () => {
       const filters: string[] = new Array<string>('100', '101');
       mocked(getSecret).mockResolvedValue(filters);
 
-      jest
-        .spyOn(global.Date, 'now')
-        .mockImplementationOnce(
-          () => new Date('2021-10-10T11:02:28.637Z').valueOf(),
-        );
+      jest.spyOn(global.Date, 'now').mockImplementationOnce(() => new Date('2021-10-10T11:02:28.637Z').valueOf());
 
       const staffSchedules: StaffSchedule[] = await database.getstaffSchedules(exportDate);
       expect(mKnex.select).toBeCalledWith(
