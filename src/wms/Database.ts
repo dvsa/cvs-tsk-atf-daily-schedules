@@ -54,7 +54,8 @@ export class Database {
       .havingIn('ngt_site.c_id', secret);
 
     console.info('getstaffSchedules ending');
-    return (query as StaffSchedule[]);
+
+    return query as StaffSchedule[];
   }
 
   public closeConnection(): Promise<void> {
