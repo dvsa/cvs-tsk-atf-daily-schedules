@@ -18,9 +18,7 @@ jest.mock('aws-sdk', () => {
   return { EventBridge: mEventBridge, Request: mRequest };
 });
 
-type PutEventsWithParams = (
-  params: PutEventsRequest
-) => AWS.Request<PutEventsResponse, AWS.AWSError>;
+type PutEventsWithParams = (params: PutEventsRequest) => AWS.Request<PutEventsResponse, AWS.AWSError>;
 
 const mEventBridgeInstance = new EventBridge();
 const mResultInstance = new Request<PutEventsResponse, AWS.AWSError>(null, null);
