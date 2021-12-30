@@ -9,14 +9,12 @@ const schedule1 = getSchedule('site1', 1);
 const schedule2 = getSchedule('site1', 2);
 const schedule3 = getSchedule('site2', 3);
 
-let mDatabaseImp = ({
+let mDatabaseImp = {
   getstaffSchedules: jest.fn().mockResolvedValue([schedule1, schedule2, schedule3]),
   closeConnection: jest.fn().mockImplementation(() => Promise.resolve()),
-});
+};
 
-mDatabase.mockImplementation(
-  () => mDatabaseImp,
-);
+mDatabase.mockImplementation(() => mDatabaseImp);
 
 const exportDate = new Date('2021-10-10T10:10:10.000Z');
 
@@ -42,10 +40,10 @@ describe('Export events', () => {
 
     it('GIVEN a call to the database WHEN an error from the database occurs THEN getEvents returns an error.', async () => {
       const error = new Error('Oh no!');
-      mDatabaseImp = ({
+      mDatabaseImp = {
         getstaffSchedules: jest.fn().mockRejectedValue(error),
         closeConnection: jest.fn().mockImplementation(() => Promise.resolve()),
-      });
+      };
 
       await getEvents(exportDate).catch((err) => {
         expect(err).toBe(error);
@@ -56,10 +54,10 @@ describe('Export events', () => {
       jest.spyOn(global.console, 'error').mockImplementationOnce(() => {});
       const error1 = new Error('Oh no 1!');
       const error2 = new Error('Oh no 2!');
-      mDatabaseImp = ({
+      mDatabaseImp = {
         getstaffSchedules: jest.fn().mockRejectedValue(error1),
         closeConnection: jest.fn().mockImplementation(() => Promise.reject(error2)),
-      });
+      };
 
       await getEvents(exportDate).catch((error) => {
         expect(console.error).toHaveBeenCalledTimes(1);

@@ -38,24 +38,20 @@ describe('Application entry', () => {
     it('GIVEN a call to the function WHEN events are processed succesfully THEN a 200 is returned.', async () => {
       const mSendResponse: SendResponse = { SuccessCount: 1, FailCount: 0 };
       mocked(sendEvents).mockResolvedValue(mSendResponse);
-      const response: { statusCode: number, body: string } = await handler(event);
+      const response: { statusCode: number; body: string } = await handler(event);
       expect(response.statusCode).toEqual(200);
       expect(typeof response.body).toBe('string');
     });
 
     it('GIVEN a call to the function WHEN events are processed unsuccesfully THEN a 500 is returned.', async () => {
       mocked(sendEvents).mockRejectedValue(new Error('Oh no!'));
-      const response: { statusCode: number, body: string } = await handler(event);
+      const response: { statusCode: number; body: string } = await handler(event);
       expect(response.statusCode).toEqual(500);
       expect(typeof response.body).toBe('string');
     });
 
     it('GIVEN a call to the function WHEN no date is passed in THEN the database is called with the current date.', async () => {
-      jest
-        .spyOn(global.Date, 'now')
-        .mockImplementation(
-          () => new Date('2021-10-10T11:02:28.637Z').valueOf(),
-        );
+      jest.spyOn(global.Date, 'now').mockImplementation(() => new Date('2021-10-10T11:02:28.637Z').valueOf());
       await handler(event);
       expect(getEvents).toBeCalledWith(new Date(Date.now()));
     });
