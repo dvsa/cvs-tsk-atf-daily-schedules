@@ -7,6 +7,7 @@ import { sendEvents } from '../../src/eventbridge/send';
 import { SendResponse } from '../../src/eventbridge/SendResponse';
 import { getEvents } from '../../src/wms/ExportEvents';
 import { FacillitySchedules } from '../../src/wms/Interfaces/DynamicsCE';
+import logger from '../../src/observability/logger';
 
 jest.mock('../../src/eventbridge/send');
 jest.mock('../../src/wms/ExportEvents');
@@ -66,8 +67,8 @@ describe('Application entry', () => {
       event.detail = { exportDate: 'I am not a date!' };
       const error = new Error(`Failed to manually trigger function. Invalid input date ${event.detail.exportDate}`);
       await handler(event).catch((err) => {
-        expect(console.error).toHaveBeenCalledTimes(1);
-        expect(console.error).toHaveBeenCalledWith(error);
+        expect(logger.error).toHaveBeenCalledTimes(1);
+        expect(logger.error).toHaveBeenCalledWith(error);
         expect(err).toBe(error);
       });
     });

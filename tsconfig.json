@@ -11,7 +11,8 @@
     "outDir": "./.build",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
   "include": ["./src/**/*.ts", "tests/**/*.ts"],
   "typeRoots": ["./src/wims/@types"],
