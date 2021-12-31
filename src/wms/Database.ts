@@ -4,6 +4,7 @@ import { Signer } from 'aws-sdk/clients/rds';
 import { knex, Knex } from 'knex';
 import { StaffSchedule } from './Interfaces/StaffSchedule';
 import { getSecret } from '../filterUtils';
+import logger from '../observability/logger';
 
 export class Database {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,7 +43,7 @@ export class Database {
   }
 
   public async getstaffSchedules(exportDate: Date): Promise<StaffSchedule[]> {
-    console.info('getstaffSchedules starting');
+    logger.info('getstaffSchedules starting');
     const secret: string[] = await getSecret(process.env.SECRET_NAME);
     const query = await this.connection
       .select('ngt_site.c_id', 'ngt_staff.staff_id', 'status', 'event_date', 'event_start', 'event_end')
@@ -53,7 +54,7 @@ export class Database {
       .where('event_date', '=', dateformat(exportDate, 'yyyy-mm-dd'))
       .havingIn('ngt_site.c_id', secret);
 
-    console.info('getstaffSchedules ending');
+    logger.info('getstaffSchedules ending');
     return query as StaffSchedule[];
   }
 

@@ -7,8 +7,8 @@ import logger from '../observability/logger';
 
 const eventbridge = new EventBridge();
 const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse> => {
-  console.info('sendEvents starting');
-  console.info(`${schedules.length} ${schedules.length === 1 ? 'event' : 'events'} ready to send to eventbridge.`);
+  logger.info('sendEvents starting');
+  logger.info(`${schedules.length} ${schedules.length === 1 ? 'event' : 'events'} ready to send to eventbridge.`);
 
   const sendResponse: SendResponse = {
     SuccessCount: 0,
@@ -31,7 +31,7 @@ const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse
     params.Entries.push(entry);
 
     try {
-      console.debug(`event about to be sent: ${JSON.stringify(params)}`);
+      logger.debug(`event about to be sent: ${JSON.stringify(params)}`);
       // TODO Make the putEvents run in parallel?
       // eslint-disable-next-line no-await-in-loop
       const result = await eventbridge.putEvents(params).promise();
@@ -43,7 +43,7 @@ const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse
     }
   }
 
-  console.info('sendEvents ending');
+  logger.info('sendEvents ending');
 
   return sendResponse;
 };

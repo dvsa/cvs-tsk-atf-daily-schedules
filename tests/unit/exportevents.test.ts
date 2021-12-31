@@ -2,6 +2,7 @@ import { mocked } from 'ts-jest/utils';
 import { Database } from '../../src/wms/Database';
 import { getEvents } from '../../src/wms/ExportEvents';
 import { StaffSchedule } from '../../src/wms/Interfaces/StaffSchedule';
+import logger from '../../src/observability/logger';
 
 jest.mock('../../src/wms/Database');
 const mDatabase = mocked(Database, true);
@@ -51,7 +52,7 @@ describe('Export events', () => {
     });
 
     it('GIVEN a call to the database WHEN an error from the database occurs and close connection errors THEN getEvents returns an error.', async () => {
-      jest.spyOn(global.console, 'error').mockImplementationOnce(() => {});
+      jest.spyOn(logger, 'error');
       const error1 = new Error('Oh no 1!');
       const error2 = new Error('Oh no 2!');
       mDatabaseImp = {
@@ -60,8 +61,8 @@ describe('Export events', () => {
       };
 
       await getEvents(exportDate).catch((error) => {
-        expect(console.error).toHaveBeenCalledTimes(1);
-        expect(console.error).toHaveBeenCalledWith(error2);
+        expect(logger.error).toHaveBeenCalledTimes(1);
+        expect(logger.error).toHaveBeenCalledWith(error2);
         expect(error).toBe(error1);
       });
     });

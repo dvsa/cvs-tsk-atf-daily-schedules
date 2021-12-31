@@ -3,9 +3,10 @@
 import dateformat from 'dateformat';
 import { Database } from './Database';
 import { FacillitySchedules, Vsa } from './Interfaces/DynamicsCE';
+import logger from '../observability/logger';
 
 export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]> {
-  console.info('getEvents starting');
+  logger.info('getEvents starting');
 
   const database = new Database();
 
@@ -36,12 +37,12 @@ export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]>
     });
   } catch (error) {
     database.closeConnection().catch((e) => {
-      console.error(e);
+      logger.error(e);
     });
     throw error;
   }
 
-  console.info('getEvents ending');
+  logger.info('getEvents ending');
 
   return facilitySchedules;
 }
