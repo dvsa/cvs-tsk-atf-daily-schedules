@@ -10,12 +10,12 @@ const logFormat = printf((info) => {
   return `${info.level}: ${info.message}`;
 });
 
-const localDevConfig = {
+const config = {
   level: process.env.LOG_LEVEL || 'info',
   format: logFormat,
 };
 
 const logger = createLogger();
-logger.add(new transports.Console(localDevConfig));
+logger.add(new transports.Console(config));
 
 export default logger;
