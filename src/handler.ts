@@ -9,7 +9,9 @@ const {
   NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE,
 } = process.env;
 
-logger.debug(`\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n\n`);
+logger.debug(
+  `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n\n`,
+);
 
 const handler = async (event: ScheduledEvent): Promise<{ statusCode: number; body: string }> => {
   try {
