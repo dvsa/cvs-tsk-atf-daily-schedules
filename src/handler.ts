@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import 'source-map-support/register';
-import { ScheduledEvent } from 'aws-lambda';
+import { ScheduledEvent, Context, Callback } from 'aws-lambda';
 import { sendEvents } from './eventbridge/send';
 import { getEvents } from './wms/ExportEvents';
 import logger from './observability/logger';
@@ -13,7 +13,7 @@ logger.debug(
   `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n\n`,
 );
 
-const handler = async (event: ScheduledEvent): Promise<{ statusCode: number; body: string }> => {
+const handler = async (event: ScheduledEvent, _context: Context, callback: Callback) => {
   try {
     logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 
@@ -28,12 +28,11 @@ const handler = async (event: ScheduledEvent): Promise<{ statusCode: number; bod
     await sendEvents(facilitySchedules);
 
     logger.info('Data processed successfully.');
-    return { statusCode: 200, body: 'Data processed successfully.' };
+    callback(null, 'Data processed successfully.');
   } catch (error) {
     logger.info('Data processed unsuccessfully.');
     logger.error('', error);
-
-    return { statusCode: 500, body: 'Data processed unsuccessfully.' };
+    callback(new Error('Data processed unsuccessfully.'));
   }
 };
 
