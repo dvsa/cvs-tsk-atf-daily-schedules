@@ -35,11 +35,10 @@ export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]>
     map.forEach((vsa, facilityId) => {
       facilitySchedules.find((f) => f.testfacilityid === facilityId).vsa = vsa;
     });
-  } catch (error) {
+  } finally {
     database.closeConnection().catch((e) => {
       logger.error(e);
     });
-    throw error;
   }
 
   logger.info('getEvents ending');
