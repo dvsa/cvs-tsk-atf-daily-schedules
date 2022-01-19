@@ -12,6 +12,7 @@ import logger from '../../src/observability/logger';
 jest.mock('../../src/eventbridge/send');
 jest.mock('../../src/wms/ExportEvents');
 jest.mock('../../src/utils');
+jest.mock('../../src/observability/logger');
 
 describe('Application entry', () => {
   let event: ScheduledEvent;
@@ -32,46 +33,66 @@ describe('Application entry', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks().restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Handler', () => {
-    it('GIVEN a call to the function WHEN events are processed succesfully THEN a callback result is returned.', async () => {
+    it('GIVEN a call to the function WHEN events are processed succesfully THEN a callback result is returned.', () => {
       const mSendResponse: SendResponse = { SuccessCount: 1, FailCount: 0 };
       mocked(sendEvents).mockResolvedValue(mSendResponse);
-      await handler(event, null, (error: string | Error, result: string) => {
+      handler(event, null, (error: string | Error, result: string) => {
         expect(result).toEqual('Data processed successfully.');
         expect(error).toBeNull();
       });
     });
 
-    it('GIVEN a call to the function WHEN events are processed unsuccesfully THEN a callback error is returned.', async () => {
+    it('GIVEN a call to the function WHEN events are processed unsuccesfully THEN a callback error is returned.', () => {
       mocked(sendEvents).mockRejectedValue(new Error('Oh no!'));
-      await handler(event, null, (error: string | Error, result: string) => {
+      handler(event, null, (error: string | Error, result: string) => {
         expect(error).toEqual(new Error('Data processed unsuccessfully.'));
         expect(result).toBeUndefined();
       });
     });
 
-    it('GIVEN a call to the function WHEN no date is passed in THEN the database is called with the current date.', async () => {
+    it('GIVEN a call to the function WHEN no date is passed in THEN the database is called with the current date.', () => {
       jest.spyOn(global.Date, 'now').mockImplementation(() => new Date('2021-10-10T11:02:28.637Z').valueOf());
-      await handler(event, null, () => {});
+      handler(event, null, () => {});
       expect(getEvents).toBeCalledWith(new Date(Date.now()));
     });
 
-    it('GIVEN a call to the function WHEN a date is passed in THEN the database is called with that date.', async () => {
+    it('GIVEN a call to the function WHEN a date is passed in THEN the database is called with that date.', () => {
       event.detail = { exportDate: '2021-11-11' };
-      await handler(event, null, () => {});
+      handler(event, null, () => {});
       expect(getEvents).toBeCalledWith(new Date('2021-11-11'));
     });
 
-    it('GIVEN a call to the function WHEN an invalid date is passed in THEN an error is thrown.', async () => {
+    it('GIVEN a call to the function WHEN an invalid date is passed in THEN an error is thrown.', () => {
       event.detail = { exportDate: 'I am not a date!' };
       const error = new Error(`Failed to manually trigger function. Invalid input date ${event.detail.exportDate}`);
-      await handler(event, null, () => {}).catch((err) => {
+      expect(() => { handler(event, null, () => {}); }).toThrow(error);
+    });
+
+    it('GIVEN a call to the function WHEN an error is thrown in getEvents THEN the error is logged.', () => {
+      const getEventsError = new Error('getEvents error!');
+      mocked(getEvents).mockRejectedValue(getEventsError);
+      event.detail = { exportDate: '2021-11-11' };
+      handler(event, null, (error: string | Error, result: string) => {
+        expect(error).toEqual(new Error('Data processed unsuccessfully.'));
+        expect(result).toBeUndefined();
         expect(logger.error).toHaveBeenCalledTimes(1);
-        expect(logger.error).toHaveBeenCalledWith(error);
-        expect(err).toBe(error);
+        expect(logger.error).toHaveBeenCalledWith(getEventsError);
+      });
+    });
+
+    it('GIVEN a call to the function WHEN an error is thrown in sendEvents THEN the error is logged.', () => {
+      const sendEventsError = new Error('sendEvents error!');
+      mocked(sendEvents).mockRejectedValue(sendEventsError);
+      event.detail = { exportDate: '2021-11-11' };
+      handler(event, null, (error: string | Error, result: string) => {
+        expect(error).toEqual(new Error('Data processed unsuccessfully.'));
+        expect(result).toBeUndefined();
+        expect(logger.error).toHaveBeenCalledTimes(1);
+        expect(logger.error).toHaveBeenCalledWith(sendEventsError);
       });
     });
   });
