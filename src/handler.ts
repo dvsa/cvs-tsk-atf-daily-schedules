@@ -13,27 +13,27 @@ logger.debug(
   `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n\n`,
 );
 
-const handler = async (event: ScheduledEvent, _context: Context, callback: Callback) => {
-  try {
-    logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
+const handler = (event: ScheduledEvent, _context: Context, callback: Callback) => {
+  logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 
-    let exportDate: Date;
-    if (event?.detail?.exportDate) {
-      exportDate = getDateFromManualTrigger(event.detail.exportDate as string);
-    } else {
-      exportDate = new Date(Date.now());
-    }
-
-    const facilitySchedules = await getEvents(exportDate);
-    await sendEvents(facilitySchedules);
-
-    logger.info('Data processed successfully.');
-    callback(null, 'Data processed successfully.');
-  } catch (error) {
-    logger.info('Data processed unsuccessfully.');
-    logger.error('', error);
-    callback(new Error('Data processed unsuccessfully.'));
+  let exportDate: Date;
+  if (event?.detail?.exportDate) {
+    exportDate = getDateFromManualTrigger(event.detail.exportDate as string);
+  } else {
+    exportDate = new Date(Date.now());
   }
+
+  getEvents(exportDate)
+    .then((facilitySchedules) => sendEvents(facilitySchedules)
+      .then(() => {
+        logger.info('Data processed successfully.');
+        callback(null, 'Data processed successfully.');
+      }))
+    .catch((error) => {
+      logger.info('Data processed unsuccessfully.');
+      logger.error('', error);
+      callback(new Error('Data processed unsuccessfully.'));
+    });
 };
 
 function getDateFromManualTrigger(inputDate: string): Date {
