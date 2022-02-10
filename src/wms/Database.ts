@@ -46,13 +46,13 @@ export class Database {
     logger.info('getstaffSchedules starting');
     const secret: string[] = await getSecret(process.env.SECRET_NAME);
     const query = await this.connection
-      .select('ngt_site.c_id', 'ngt_staff.staff_id', 'status', 'event_date', 'event_start', 'event_end')
-      .from<StaffSchedule>('ngt_site_events')
-      .innerJoin('ngt_staff', 'ngt_site_events.staff_id', 'ngt_staff.id')
-      .innerJoin('ngt_site', 'ngt_site_events.site_id', 'ngt_site.id')
+      .select('NGT_SITE.C_ID', 'NGT_STAFF.STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END')
+      .from<StaffSchedule>('NGT_SITE_EVENTS')
+      .innerJoin('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.ID')
+      .innerJoin('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.ID')
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      .where('event_date', '=', dateformat(exportDate, 'yyyy-mm-dd'))
-      .havingIn('ngt_site.c_id', secret);
+      .where('EVENT_DATE', '=', dateformat(exportDate, 'yyyy-mm-dd'))
+      .havingIn('NGT_SITE.C_ID', secret);
 
     logger.info('getstaffSchedules ending');
     return query as StaffSchedule[];
