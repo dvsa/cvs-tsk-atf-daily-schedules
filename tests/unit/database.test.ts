@@ -68,6 +68,7 @@ describe('Database calls', () => {
       expect(mKnex.innerJoin).toBeCalledWith('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.ID');
       expect(mKnex.from).toBeCalledWith('NGT_SITE_EVENTS');
       expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
+      expect(mKnex.where).toBeCalledWith('STATUS', 'ALLOCATED');
       expect(mKnex.havingIn).toBeCalledWith('NGT_SITE.C_ID', ['100', '101']);
       expect(staffSchedules).toHaveLength(1);
     });
