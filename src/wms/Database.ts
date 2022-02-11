@@ -52,6 +52,7 @@ export class Database {
       .innerJoin('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.ID')
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .where('EVENT_DATE', '=', dateformat(exportDate, 'yyyy-mm-dd'))
+      .where('STATUS', 'ALLOCATED')
       .havingIn('NGT_SITE.C_ID', secret);
 
     logger.info('getstaffSchedules ending');
