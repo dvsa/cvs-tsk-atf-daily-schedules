@@ -57,18 +57,19 @@ describe('Database calls', () => {
 
       const staffSchedules: StaffSchedule[] = await database.getstaffSchedules(exportDate);
       expect(mKnex.select).toBeCalledWith(
-        'ngt_site.c_id',
-        'ngt_staff.staff_id',
-        'status',
-        'event_date',
-        'event_start',
-        'event_end',
+        'NGT_SITE.C_ID',
+        'NGT_STAFF.STAFF_ID',
+        'STATUS',
+        'EVENT_DATE',
+        'EVENT_START',
+        'EVENT_END',
       );
-      expect(mKnex.innerJoin).toBeCalledWith('ngt_staff', 'ngt_site_events.staff_id', 'ngt_staff.id');
-      expect(mKnex.innerJoin).toBeCalledWith('ngt_site', 'ngt_site_events.site_id', 'ngt_site.id');
-      expect(mKnex.from).toBeCalledWith('ngt_site_events');
-      expect(mKnex.where).toBeCalledWith('event_date', '=', '2021-10-10');
-      expect(mKnex.havingIn).toBeCalledWith('ngt_site.c_id', ['100', '101']);
+      expect(mKnex.innerJoin).toBeCalledWith('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.STAFF_ID');
+      expect(mKnex.innerJoin).toBeCalledWith('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.SITE_ID');
+      expect(mKnex.from).toBeCalledWith('NGT_SITE_EVENTS');
+      expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
+      expect(mKnex.where).toBeCalledWith('STATUS', 'ALLOCATED');
+      expect(mKnex.havingIn).toBeCalledWith('NGT_SITE.C_ID', ['100', '101']);
       expect(staffSchedules).toHaveLength(1);
     });
 
