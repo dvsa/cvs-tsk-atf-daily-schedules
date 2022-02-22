@@ -48,8 +48,8 @@ export class Database {
     const query = await this.connection
       .select('NGT_SITE.C_ID', 'NGT_STAFF.STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END')
       .from<StaffSchedule>('NGT_SITE_EVENTS')
-      .innerJoin('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.ID')
-      .innerJoin('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.ID')
+      .innerJoin('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.STAFF_ID')
+      .innerJoin('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.SITE_ID')
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .where('EVENT_DATE', '=', dateformat(exportDate, 'yyyy-mm-dd'))
       .where('STATUS', 'ALLOCATED')

@@ -12,12 +12,15 @@ import logger from '../../src/observability/logger';
 jest.mock('../../src/eventbridge/send');
 jest.mock('../../src/wms/ExportEvents');
 jest.mock('../../src/utils');
+jest.mock('../../src/observability/logger');
 
 describe('Application entry', () => {
   let event: ScheduledEvent;
   mocked(getEvents).mockResolvedValue(Array<FacillitySchedules>());
 
   beforeEach(() => {
+    jest.clearAllMocks().restoreAllMocks();
+
     event = {
       version: '0',
       id: '0',
@@ -31,47 +34,76 @@ describe('Application entry', () => {
     };
   });
 
-  afterEach(() => {
-    jest.resetAllMocks().restoreAllMocks();
-  });
-
   describe('Handler', () => {
-    it('GIVEN a call to the function WHEN events are processed succesfully THEN a callback result is returned.', async () => {
+    it('GIVEN a call to the function WHEN events are processed succesfully THEN a callback result is returned.', (done) => {
       const mSendResponse: SendResponse = { SuccessCount: 1, FailCount: 0 };
       mocked(sendEvents).mockResolvedValue(mSendResponse);
-      await handler(event, null, (error: string | Error, result: string) => {
-        expect(result).toEqual('Data processed successfully.');
-        expect(error).toBeNull();
+      handler(event, null, (error: string | Error, result: string) => {
+        try {
+          expect(result).toEqual('Data processed successfully.');
+          expect(error).toBeNull();
+          done();
+        } catch (doneError) {
+          done(doneError);
+        }
       });
     });
 
-    it('GIVEN a call to the function WHEN events are processed unsuccesfully THEN a callback error is returned.', async () => {
+    it('GIVEN a call to the function WHEN events are processed unsuccesfully THEN a callback error is returned.', (done) => {
       mocked(sendEvents).mockRejectedValue(new Error('Oh no!'));
-      await handler(event, null, (error: string | Error, result: string) => {
+      handler(event, null, (error: string | Error, result: string) => {
+        try {
+          expect(error).toEqual(new Error('Data processed unsuccessfully.'));
+          expect(result).toBeUndefined();
+          done();
+        } catch (doneError) {
+          done(doneError);
+        }
+      });
+    });
+
+    it('GIVEN a call to the function WHEN an invalid date is passed in THEN an error is thrown.', () => {
+      event.detail = { exportDate: 'I am not a date!' };
+      const inValidDateError = new Error(`Failed to manually trigger function. Invalid input date ${event.detail.exportDate}`);
+      handler(event, null, (error: string | Error, result: string) => {
         expect(error).toEqual(new Error('Data processed unsuccessfully.'));
         expect(result).toBeUndefined();
+        expect(logger.error).toHaveBeenCalledTimes(1);
+        expect(logger.error).toHaveBeenCalledWith(inValidDateError);
       });
     });
 
-    it('GIVEN a call to the function WHEN no date is passed in THEN the database is called with the current date.', async () => {
-      jest.spyOn(global.Date, 'now').mockImplementation(() => new Date('2021-10-10T11:02:28.637Z').valueOf());
-      await handler(event, null, () => {});
-      expect(getEvents).toBeCalledWith(new Date(Date.now()));
-    });
-
-    it('GIVEN a call to the function WHEN a date is passed in THEN the database is called with that date.', async () => {
+    it('GIVEN a call to the function WHEN an error is thrown in getEvents THEN the error is logged.', (done) => {
+      const getEventsError = new Error('getEvents error!');
+      mocked(getEvents).mockRejectedValueOnce(getEventsError);
       event.detail = { exportDate: '2021-11-11' };
-      await handler(event, null, () => {});
-      expect(getEvents).toBeCalledWith(new Date('2021-11-11'));
+      handler(event, null, (error: string | Error, result: string) => {
+        try {
+          expect(error).toEqual(new Error('Data processed unsuccessfully.'));
+          expect(result).toBeUndefined();
+          expect(logger.error).toHaveBeenCalledTimes(1);
+          expect(logger.error).toHaveBeenCalledWith('', getEventsError);
+          done();
+        } catch (doneError) {
+          done(doneError);
+        }
+      });
     });
 
-    it('GIVEN a call to the function WHEN an invalid date is passed in THEN an error is thrown.', async () => {
-      event.detail = { exportDate: 'I am not a date!' };
-      const error = new Error(`Failed to manually trigger function. Invalid input date ${event.detail.exportDate}`);
-      await handler(event, null, () => {}).catch((err) => {
-        expect(logger.error).toHaveBeenCalledTimes(1);
-        expect(logger.error).toHaveBeenCalledWith(error);
-        expect(err).toBe(error);
+    it('GIVEN a call to the function WHEN an error is thrown in sendEvents THEN the error is logged.', (done) => {
+      const sendEventsError = new Error('sendEvents error!');
+      mocked(sendEvents).mockRejectedValueOnce(sendEventsError);
+      event.detail = { exportDate: '2021-11-11' };
+      handler(event, null, (error: string | Error, result: string) => {
+        try {
+          expect(error).toEqual(new Error('Data processed unsuccessfully.'));
+          expect(result).toBeUndefined();
+          expect(logger.error).toHaveBeenCalledTimes(1);
+          expect(logger.error).toHaveBeenCalledWith('', sendEventsError);
+          done();
+        } catch (doneError) {
+          done(doneError);
+        }
       });
     });
   });

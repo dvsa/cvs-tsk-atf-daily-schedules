@@ -5,8 +5,15 @@ import { Database } from './Database';
 import { FacillitySchedules, Vsa } from './Interfaces/DynamicsCE';
 import logger from '../observability/logger';
 
-export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]> {
+export async function getEvents(exportDate?: string): Promise<FacillitySchedules[]> {
   logger.info('getEvents starting');
+
+  let cleansedExportDate: Date;
+  if (exportDate) {
+    cleansedExportDate = getDateFromManualTrigger(exportDate);
+  } else {
+    cleansedExportDate = new Date(Date.now());
+  }
 
   const database = new Database();
 
@@ -14,7 +21,7 @@ export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]>
   const facilitySchedules: FacillitySchedules[] = [];
 
   try {
-    const schedules = await database.getstaffSchedules(exportDate);
+    const schedules = await database.getstaffSchedules(cleansedExportDate);
     schedules.forEach((schedule) => {
       const vsa: Vsa = {
         status: schedule.status,
@@ -35,15 +42,22 @@ export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]>
     map.forEach((vsa, facilityId) => {
       facilitySchedules.find((f) => f.testfacilityid === facilityId).vsa = vsa;
     });
-  } catch (error) {
+  } finally {
     database.closeConnection().catch((e) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       logger.error(e);
     });
-    throw error;
   }
 
   logger.info('getEvents ending');
 
   return facilitySchedules;
+}
+
+function getDateFromManualTrigger(inputDate: string): Date {
+  const isValidDate = !Number.isNaN(Date.parse(inputDate));
+  if (!isValidDate) {
+    throw new Error(`Failed to manually trigger function. Invalid input date ${inputDate}`);
+  }
+  return new Date(inputDate);
 }

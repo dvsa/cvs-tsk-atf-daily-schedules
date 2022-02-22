@@ -17,9 +17,13 @@ let mDatabaseImp = {
 
 mDatabase.mockImplementation(() => mDatabaseImp);
 
-const exportDate = new Date('2021-10-10T10:10:10.000Z');
+const exportDate = '2021-10-10T10:10:10.000Z';
 
 describe('Export events', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('getEvents', () => {
     it('GIVEN three schedules returned for two distinct sites WHEN processed THEN two orders are returned.', async () => {
       const schedules = await getEvents(exportDate);
@@ -37,6 +41,29 @@ describe('Export events', () => {
       const schedules = await getEvents(exportDate);
       expect(schedules[1].vsa).toHaveLength(1);
       expect(schedules[1].vsa[0].testerid).toEqual(3);
+    });
+
+    it('GIVEN a call to the function WHEN no date is passed in THEN the database is called with the current date.', async () => {
+      jest.spyOn(global.Date, 'now').mockImplementation(() => new Date('2021-10-10T11:02:28.637Z').valueOf());
+
+      await getEvents();
+      expect(mDatabaseImp.getstaffSchedules).toHaveBeenCalledTimes(1);
+      expect(mDatabaseImp.getstaffSchedules).toBeCalledWith(new Date(Date.now()));
+    });
+
+    it('GIVEN a call to the function WHEN a date is passed in THEN the database is called with that date.', async () => {
+      await getEvents(exportDate);
+      expect(mDatabaseImp.getstaffSchedules).toHaveBeenCalledTimes(1);
+      expect(mDatabaseImp.getstaffSchedules).toBeCalledWith(new Date(exportDate));
+    });
+
+    it('GIVEN a call to the function WHEN an invalid date is passed in THEN an error is thrown.', async () => {
+      const invalidDate = 'I am not a date!';
+      const inValidDateError = new Error(`Failed to manually trigger function. Invalid input date ${invalidDate}`);
+
+      await expect(getEvents(invalidDate))
+        .rejects
+        .toThrowError(inValidDateError);
     });
 
     it('GIVEN a call to the database WHEN an error from the database occurs THEN getEvents returns an error.', async () => {
