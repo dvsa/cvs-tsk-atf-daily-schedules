@@ -37,6 +37,7 @@ export async function getEvents(exportDate: Date): Promise<FacillitySchedules[]>
     });
   } catch (error) {
     database.closeConnection().catch((e) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       logger.error(e);
     });
     throw error;
