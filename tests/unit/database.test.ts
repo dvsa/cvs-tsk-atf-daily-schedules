@@ -101,8 +101,8 @@ describe('Database calls', () => {
         'EVENT_START',
         'EVENT_END',
       );
-      expect(mKnex.innerJoin).toBeCalledWith('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.ID');
-      expect(mKnex.innerJoin).toBeCalledWith('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.ID');
+      expect(mKnex.innerJoin).toBeCalledWith('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.STAFF_ID');
+      expect(mKnex.innerJoin).toBeCalledWith('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.SITE_ID');
       expect(mKnex.from).toBeCalledWith('NGT_SITE_EVENTS');
       expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
       expect(mKnex.where).toBeCalledWith('STATUS', 'ALLOCATED');
