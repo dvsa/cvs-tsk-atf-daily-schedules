@@ -57,7 +57,7 @@ export class Database {
 
     logger.info('getstaffSchedules ending');
 
-    if (query.length <= 0) {
+    if (query.length === 0) {
       throw new EvalError('No daily schedules found in WMS, check coneection or content');
     }
     return query as StaffSchedule[];
