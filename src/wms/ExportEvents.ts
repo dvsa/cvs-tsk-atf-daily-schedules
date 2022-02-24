@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import dateformat from 'dateformat';
+import logger from '../observability/logger';
 import { Database } from './Database';
 import { FacillitySchedules, Vsa } from './Interfaces/DynamicsCE';
-import logger from '../observability/logger';
 
 export async function getEvents(exportDate?: string): Promise<FacillitySchedules[]> {
   logger.info('getEvents starting');
