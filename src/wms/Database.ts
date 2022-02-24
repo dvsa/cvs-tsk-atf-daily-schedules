@@ -95,7 +95,7 @@ export class Database {
     });
   }
 
-  private validate<T>(val: T, name: string) {
+  validate<T>(val: T, name: string) {
     if (!val) {
       throw new Error(`${name} has no value`);
     }

@@ -1,8 +1,8 @@
 import { mocked } from 'ts-jest/utils';
+import logger from '../../src/observability/logger';
 import { Database } from '../../src/wms/Database';
 import { getEvents } from '../../src/wms/ExportEvents';
 import { StaffSchedule } from '../../src/wms/Interfaces/StaffSchedule';
-import logger from '../../src/observability/logger';
 
 jest.mock('../../src/wms/Database');
 const mDatabase = mocked(Database, true);
@@ -13,6 +13,7 @@ const schedule3 = getSchedule('site2', 3);
 let mDatabaseImp = {
   getstaffSchedules: jest.fn().mockResolvedValue([schedule1, schedule2, schedule3]),
   closeConnection: jest.fn().mockImplementation(() => Promise.resolve()),
+  validate: jest.fn().mockImplementation(() => {}),
 };
 
 mDatabase.mockImplementation(() => mDatabaseImp);
@@ -61,9 +62,7 @@ describe('Export events', () => {
       const invalidDate = 'I am not a date!';
       const inValidDateError = new Error(`Failed to manually trigger function. Invalid input date ${invalidDate}`);
 
-      await expect(getEvents(invalidDate))
-        .rejects
-        .toThrowError(inValidDateError);
+      await expect(getEvents(invalidDate)).rejects.toThrowError(inValidDateError);
     });
 
     it('GIVEN a call to the database WHEN an error from the database occurs THEN getEvents returns an error.', async () => {
@@ -71,6 +70,7 @@ describe('Export events', () => {
       mDatabaseImp = {
         getstaffSchedules: jest.fn().mockRejectedValue(error),
         closeConnection: jest.fn().mockImplementation(() => Promise.resolve()),
+        validate: jest.fn().mockImplementation(() => {}),
       };
 
       await getEvents(exportDate).catch((err) => {
@@ -85,6 +85,7 @@ describe('Export events', () => {
       mDatabaseImp = {
         getstaffSchedules: jest.fn().mockRejectedValue(error1),
         closeConnection: jest.fn().mockImplementation(() => Promise.reject(error2)),
+        validate: jest.fn().mockImplementation(() => {}),
       };
 
       await getEvents(exportDate).catch((error) => {
