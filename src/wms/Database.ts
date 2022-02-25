@@ -9,7 +9,7 @@ import { StaffSchedule } from './Interfaces/StaffSchedule';
 
 interface SqlQueryResults {
   C_ID: string;
-  STAFF_ID: number;
+  STAFF_ID: string;
   STATUS: string;
   EVENT_DATE: string;
   EVENT_START: string;
@@ -84,7 +84,7 @@ export class Database {
 
       const schedule: StaffSchedule = {
         c_id: q.C_ID,
-        staff_id: q.STAFF_ID,
+        staff_id: parseInt(q.STAFF_ID, 10),
         status: q.STATUS,
         event_date: q.EVENT_DATE.split(' ')[0], // We only want the date part from "YYYY-MM-DD 00:00:00"
         event_start: q.EVENT_START,
