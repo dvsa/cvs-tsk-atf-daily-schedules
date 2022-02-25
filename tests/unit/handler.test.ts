@@ -64,7 +64,9 @@ describe('Application entry', () => {
 
     it('GIVEN a call to the function WHEN an invalid date is passed in THEN an error is thrown.', () => {
       event.detail = { exportDate: 'I am not a date!' };
-      const inValidDateError = new Error(`Failed to manually trigger function. Invalid input date ${event.detail.exportDate}`);
+      const inValidDateError = new Error(
+        `Failed to manually trigger function. Invalid input date ${event.detail.exportDate}`,
+      );
       handler(event, null, (error: string | Error, result: string) => {
         expect(error).toEqual(new Error('Data processed unsuccessfully.'));
         expect(result).toBeUndefined();

@@ -18,12 +18,12 @@ jest.mock('../../src/filterUtils');
 jest.mock('knex');
 const mknex = mocked(knex, true);
 const ent = {
-  site_id: 'string',
-  staff_id: 2,
-  status: 'string',
-  event_date: 'string',
-  event_start: 'string',
-  event_end: 'string',
+  C_ID: 'string',
+  STAFF_ID: 2,
+  STATUS: 'string',
+  EVENT_DATE: 'YYYY-MM-DD 00:00:00',
+  EVENT_START: 'string',
+  EVENT_END: 'string',
 };
 let mKnex = ({
   select: jest.fn().mockReturnThis(),

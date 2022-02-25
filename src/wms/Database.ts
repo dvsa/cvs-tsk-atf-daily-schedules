@@ -1,10 +1,20 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import dateformat from 'dateformat';
 import { Signer } from 'aws-sdk/clients/rds';
+import dateformat from 'dateformat';
 import { knex, Knex } from 'knex';
-import { StaffSchedule } from './Interfaces/StaffSchedule';
 import { getSecret } from '../filterUtils';
 import logger from '../observability/logger';
+import { StaffSchedule } from './Interfaces/StaffSchedule';
+
+interface SqlQueryResults {
+  C_ID: string;
+  STAFF_ID: number;
+  STATUS: string;
+  EVENT_DATE: string;
+  EVENT_START: string;
+  EVENT_END: string;
+}
 
 export class Database {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +55,7 @@ export class Database {
   public async getstaffSchedules(exportDate: Date): Promise<StaffSchedule[]> {
     logger.info('getstaffSchedules starting');
     const secret: string[] = await getSecret(process.env.SECRET_NAME);
-    const query = await this.connection
+    const query: SqlQueryResults[] = await this.connection
       .select('NGT_SITE.C_ID', 'NGT_STAFF.STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END')
       .from<StaffSchedule>('NGT_SITE_EVENTS')
       .innerJoin('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.STAFF_ID')
@@ -60,7 +70,35 @@ export class Database {
     if (query.length === 0) {
       throw new EvalError('No daily schedules found in WMS, check connection or content');
     }
-    return query as StaffSchedule[];
+
+    return query.map<StaffSchedule>((q) => {
+      this.validate(q.C_ID, 'C_ID');
+
+      logger.info(`Processing C_ID: ${q.C_ID}`);
+
+      this.validate(q.STAFF_ID, 'STAFF_ID');
+      this.validate(q.STATUS, 'STATUS');
+      this.validate(q.EVENT_DATE, 'EVENT_DATE');
+      this.validate(q.EVENT_START, 'EVENT_START');
+      this.validate(q.EVENT_END, 'EVENT_END');
+
+      const schedule: StaffSchedule = {
+        c_id: q.C_ID,
+        staff_id: q.STAFF_ID,
+        status: q.STATUS,
+        event_date: q.EVENT_DATE.split(' ')[0], // We only want the date part from "YYYY-MM-DD 00:00:00"
+        event_start: q.EVENT_START,
+        event_end: q.EVENT_END,
+      };
+
+      return schedule;
+    });
+  }
+
+  validate<T>(val: T, name: string) {
+    if (!val) {
+      throw new Error(`${name} has no value`);
+    }
   }
 
   public closeConnection(): Promise<void> {
