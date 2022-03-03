@@ -86,7 +86,7 @@ describe('Database calls', () => {
 
       const database = new Database();
       const filters: string[] = new Array<string>('100', '101');
-      const nullError = new EvalError('No daily schedules found in WMS, check coneection or content');
+      const nullError = new EvalError('No daily schedules found in WMS, check connection or content');
       mocked(getSecret).mockResolvedValue(filters);
 
       jest.spyOn(global.Date, 'now').mockImplementationOnce(() => new Date('2021-10-10T11:02:28.637Z').valueOf());
