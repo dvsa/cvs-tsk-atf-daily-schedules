@@ -69,6 +69,7 @@ describe('Database calls', () => {
       expect(mKnex.from).toBeCalledWith('NGT_SITE_EVENTS');
       expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
       expect(mKnex.where).toBeCalledWith('STATUS', 'ALLOCATED');
+      expect(mKnex.where).toBeCalledWith('NGT_SITE_EVENTS.DELETED', 0);
       expect(mKnex.havingIn).toBeCalledWith('NGT_SITE.C_ID', ['100', '101']);
       expect(staffSchedules).toHaveLength(1);
     });
