@@ -82,6 +82,7 @@ The following variables are supported in the `.env.<NODE_ENV>` file.
 - AWS_SERVER_PORT=3009
 - AWS_EVENT_BUS_NAME=default
 - AWS_EVENT_BUS_SOURCE=eventSourceName
+- LOG_LEVEL=info
 - WMS_HOST=mysqlURL
 - WMS_PORT=3306
 - WMS_USER=mysqlUser
@@ -89,6 +90,7 @@ The following variables are supported in the `.env.<NODE_ENV>` file.
 - WMS_SCHEMA=databaseName
 - WMS_SSL_CERT=certificateName
 
+The LOG_LEVEL values used in this project are `debug`, `info`, `error` and are case sensitive. LOG_LEVEL can be omitted, in which case it will default to `info`.   
 The WMS_ variables are used for connecting to mysql. There are three variations depending on where you are connecting to and the authenticate method.
 
 ### Local mysql
