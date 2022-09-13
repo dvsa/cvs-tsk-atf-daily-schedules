@@ -60,7 +60,7 @@ export class Database {
       .from<StaffSchedule>('Daily_Booking_Alterations')
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .where('EVENT_DATE', '=', dateformat(exportDate, 'yyyy-mm-dd'))
-      .havingIn('NGT_SITE.C_ID', secret);
+      .havingIn('C_ID', secret);
 
     logger.info('getstaffSchedules ending');
 
