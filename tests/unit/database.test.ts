@@ -57,8 +57,8 @@ describe('Database calls', () => {
 
       const staffSchedules: StaffSchedule[] = await database.getstaffSchedules(exportDate);
       expect(mKnex.select).toBeCalledWith(
-        'NGT_SITE.C_ID',
-        'NGT_STAFF.STAFF_ID',
+        'C_ID',
+        'STAFF_ID',
         'STATUS',
         'EVENT_DATE',
         'EVENT_START',
@@ -90,8 +90,8 @@ describe('Database calls', () => {
         expect(error).toEqual(nullError);
       });
       expect(mKnex.select).toBeCalledWith(
-        'NGT_SITE.C_ID',
-        'NGT_STAFF.STAFF_ID',
+        'C_ID',
+        'STAFF_ID',
         'STATUS',
         'EVENT_DATE',
         'EVENT_START',
