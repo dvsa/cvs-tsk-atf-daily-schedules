@@ -56,7 +56,7 @@ export class Database {
     logger.info('getstaffSchedules starting');
     const secret: string[] = await getSecret(process.env.SECRET_NAME);
     const query: SqlQueryResults[] = await this.connection
-      .select('NGT_SITE.C_ID', 'NGT_STAFF.STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END')
+      .select('C_ID', 'STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END')
       .from<StaffSchedule>('Daily_Booking_Alterations')
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .where('EVENT_DATE', '=', dateformat(exportDate, 'yyyy-mm-dd'))
