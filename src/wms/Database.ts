@@ -56,15 +56,11 @@ export class Database {
     logger.info('getstaffSchedules starting');
     const secret: string[] = await getSecret(process.env.SECRET_NAME);
     const query: SqlQueryResults[] = await this.connection
-      .select('NGT_SITE.C_ID', 'NGT_STAFF.STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END')
-      .from<StaffSchedule>('NGT_SITE_EVENTS')
-      .innerJoin('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.STAFF_ID')
-      .innerJoin('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.SITE_ID')
+      .select('C_ID', 'STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END')
+      .from<StaffSchedule>('daily_booking_alterations')
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .where('EVENT_DATE', '=', dateformat(exportDate, 'yyyy-mm-dd'))
-      .where('STATUS', 'ALLOCATED')
-      .where('NGT_SITE_EVENTS.DELETED', 0)
-      .havingIn('NGT_SITE.C_ID', secret);
+      .havingIn('C_ID', secret);
 
     logger.info('getstaffSchedules ending');
 

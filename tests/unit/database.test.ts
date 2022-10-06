@@ -57,27 +57,22 @@ describe('Database calls', () => {
 
       const staffSchedules: StaffSchedule[] = await database.getstaffSchedules(exportDate);
       expect(mKnex.select).toBeCalledWith(
-        'NGT_SITE.C_ID',
-        'NGT_STAFF.STAFF_ID',
+        'C_ID',
+        'STAFF_ID',
         'STATUS',
         'EVENT_DATE',
         'EVENT_START',
         'EVENT_END',
       );
-      expect(mKnex.innerJoin).toBeCalledWith('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.STAFF_ID');
-      expect(mKnex.innerJoin).toBeCalledWith('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.SITE_ID');
-      expect(mKnex.from).toBeCalledWith('NGT_SITE_EVENTS');
+      expect(mKnex.from).toBeCalledWith('daily_booking_alterations');
       expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
-      expect(mKnex.where).toBeCalledWith('STATUS', 'ALLOCATED');
-      expect(mKnex.where).toBeCalledWith('NGT_SITE_EVENTS.DELETED', 0);
-      expect(mKnex.havingIn).toBeCalledWith('NGT_SITE.C_ID', ['100', '101']);
+      expect(mKnex.havingIn).toBeCalledWith('C_ID', ['100', '101']);
       expect(staffSchedules).toHaveLength(1);
     });
 
     it('GIVEN a call to getstaffSchedules WHEN empty list returned THEN error thrown.', async () => {
       mKnex = ({
         select: jest.fn().mockReturnThis(),
-        innerJoin: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         where: jest.fn().mockReturnThis(),
         havingIn: jest.fn(() => []),
@@ -95,19 +90,16 @@ describe('Database calls', () => {
         expect(error).toEqual(nullError);
       });
       expect(mKnex.select).toBeCalledWith(
-        'NGT_SITE.C_ID',
-        'NGT_STAFF.STAFF_ID',
+        'C_ID',
+        'STAFF_ID',
         'STATUS',
         'EVENT_DATE',
         'EVENT_START',
         'EVENT_END',
       );
-      expect(mKnex.innerJoin).toBeCalledWith('NGT_STAFF', 'NGT_SITE_EVENTS.STAFF_ID', 'NGT_STAFF.STAFF_ID');
-      expect(mKnex.innerJoin).toBeCalledWith('NGT_SITE', 'NGT_SITE_EVENTS.SITE_ID', 'NGT_SITE.SITE_ID');
-      expect(mKnex.from).toBeCalledWith('NGT_SITE_EVENTS');
+      expect(mKnex.from).toBeCalledWith('daily_booking_alterations');
       expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
-      expect(mKnex.where).toBeCalledWith('STATUS', 'ALLOCATED');
-      expect(mKnex.havingIn).toBeCalledWith('NGT_SITE.C_ID', ['100', '101']);
+      expect(mKnex.havingIn).toBeCalledWith('C_ID', ['100', '101']);
     });
 
     it('GIVEN a call to closeConnection WHEN everything works THEN we get no errors.', async () => {
