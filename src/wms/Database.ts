@@ -57,7 +57,7 @@ export class Database {
     const secret: string[] = await getSecret(process.env.SECRET_NAME);
     const query: SqlQueryResults[] = await this.connection
       .select('C_ID', 'STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END')
-      .from<StaffSchedule>('Daily_Booking_Alterations')
+      .from<StaffSchedule>('daily_booking_alterations')
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .where('EVENT_DATE', '=', dateformat(exportDate, 'yyyy-mm-dd'))
       .havingIn('C_ID', secret);

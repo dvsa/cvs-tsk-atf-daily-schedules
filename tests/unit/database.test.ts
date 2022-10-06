@@ -64,7 +64,7 @@ describe('Database calls', () => {
         'EVENT_START',
         'EVENT_END',
       );
-      expect(mKnex.from).toBeCalledWith('Daily_Booking_Alterations');
+      expect(mKnex.from).toBeCalledWith('daily_booking_alterations');
       expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
       expect(mKnex.havingIn).toBeCalledWith('C_ID', ['100', '101']);
       expect(staffSchedules).toHaveLength(1);
@@ -97,7 +97,7 @@ describe('Database calls', () => {
         'EVENT_START',
         'EVENT_END',
       );
-      expect(mKnex.from).toBeCalledWith('Daily_Booking_Alterations');
+      expect(mKnex.from).toBeCalledWith('daily_booking_alterations');
       expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
       expect(mKnex.havingIn).toBeCalledWith('C_ID', ['100', '101']);
     });
