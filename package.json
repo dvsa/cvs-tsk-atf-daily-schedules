@@ -1,5 +1,5 @@
 {
-  "name": "cvs-tsk-atf-daily-schedules",
+  "name": "cvs-tsk-atf-daily-schedule",
   "version": "1.0.0",
   "description": "",
   "main": "src/handler.ts",
