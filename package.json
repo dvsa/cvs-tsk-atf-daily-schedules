@@ -80,7 +80,7 @@
     "prettier": "2.2.1",
     "rimraf": "3.0.2",
     "semantic-release": "19.0.3",
-    "serverless": "2.66.1",
+    "serverless": "3.27.0",
     "serverless-offline": "8.2.0",
     "serverless-offline-aws-eventbridge": "1.6.5",
     "serverless-plugin-typescript": "2.1.0",
