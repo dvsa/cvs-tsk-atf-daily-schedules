@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "aws-lambda": "1.0.6",
-    "aws-sdk": "2.1029.0",
+    "aws-sdk": "2.1354.0",
     "dateformat": "4.6.3",
     "knex": "0.95.14",
     "mysql2": "2.3.3",
