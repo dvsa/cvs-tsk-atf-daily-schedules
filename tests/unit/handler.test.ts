@@ -62,16 +62,18 @@ describe('Application entry', () => {
       });
     });
 
-    it('GIVEN a call to the function WHEN an invalid date is passed in THEN an error is thrown.', () => {
+    it('GIVEN a call to the function WHEN an invalid date is passed in THEN an error is thrown.', async () => {
       event.detail = { exportDate: 'I am not a date!' };
       const inValidDateError = new Error(
         `Failed to manually trigger function. Invalid input date ${event.detail.exportDate}`,
       );
-      handler(event, null, (error: string | Error, result: string) => {
+      mocked(sendEvents).mockRejectedValueOnce(inValidDateError);
+
+      await handler(event, null, (error: string | Error, result: string) => {
         expect(error).toEqual(new Error('Data processed unsuccessfully.'));
         expect(result).toBeUndefined();
         expect(logger.error).toHaveBeenCalledTimes(1);
-        expect(logger.error).toHaveBeenCalledWith(inValidDateError);
+        expect(logger.error).toHaveBeenCalledWith('', inValidDateError);
       });
     });
 

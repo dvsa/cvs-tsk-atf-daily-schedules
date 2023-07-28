@@ -16,7 +16,7 @@ logger.debug(
 const handler = (event: ScheduledEvent, _context: Context, callback: Callback) => {
   logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 
-  getEvents(event?.detail?.exportDate as string)
+  return getEvents(event?.detail?.exportDate as string)
     .then((facilitySchedules) => sendEvents(facilitySchedules).then(() => {
       logger.info('Data processed successfully.');
       callback(null, 'Data processed successfully.');
