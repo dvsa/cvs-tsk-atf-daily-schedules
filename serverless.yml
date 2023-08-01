@@ -9,7 +9,7 @@ plugins:
 provider:
   profile: ${env:AWS_PROVIDER_PROFILE, 'default'}
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs18.x
   stage: ${env:NODE_ENV, 'local'}
   region: ${env:AWS_REGION, 'local'}
   # To load environment variables externally
@@ -27,13 +27,13 @@ functions:
       - cloudwatchEvent:
           event:
             source:
-              - "aws.events"
+              - 'aws.events'
             detail-type:
-              - "Scheduled Event"
+              - 'Scheduled Event'
             detail:
               task:
-                - "processWmsData"
-      
+                - 'processWmsData'
+
 custom:
   dotenv:
     basePath: './'
