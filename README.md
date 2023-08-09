@@ -4,7 +4,7 @@ Service for extracting ATF daily schedules and importing into DynamicsCE via AWS
 
 ## Dependencies
 
-The project runs on node 14.x with typescript and serverless framework. For further details about project dependencies, please refer to the `package.json` file.
+The project runs on node 18.x with typescript and serverless framework. For further details about project dependencies, please refer to the `package.json` file.
 [nvm](https://github.com/nvm-sh/nvm/blob/master/README.md) is used to manage node versions and configuration is per project using an `.npmrc` file.
 
 ## Running the project
@@ -66,6 +66,7 @@ Serverless-offline is used to run the project locally. Use `npm run start` scrip
 ```
 
 When no payload is sent to the function, the daily schedules for the current day are retrieved. To specify a different date, a payload can be sent to the function as shown below.
+
 ```json
 { "detail": { "exportDate": "2021-11-29" } }
 ```
@@ -77,6 +78,7 @@ Existing configuration to debug the running service has been made available for 
 ## Environmental variables
 
 The following variables are supported in the `.env.<NODE_ENV>` file.
+
 - AWS_PROVIDER_PROFILE=default
 - AWS_REGION=eu-west-1
 - AWS_SERVER_PORT=3009
@@ -90,10 +92,11 @@ The following variables are supported in the `.env.<NODE_ENV>` file.
 - WMS_SCHEMA=databaseName
 - WMS_SSL_CERT=certificateName
 
-The LOG_LEVEL values used in this project are `debug`, `info`, `error` and are case sensitive. LOG_LEVEL can be omitted, in which case it will default to `info`.   
-The WMS_ variables are used for connecting to mysql. There are three variations depending on where you are connecting to and the authenticate method.
+The LOG*LEVEL values used in this project are `debug`, `info`, `error` and are case sensitive. LOG_LEVEL can be omitted, in which case it will default to `info`.  
+The WMS* variables are used for connecting to mysql. There are three variations depending on where you are connecting to and the authenticate method.
 
 ### Local mysql
+
 - WMS_HOST=mysqlURL
 - WMS_PORT=3306
 - WMS_USER=mysqlUser
@@ -101,6 +104,7 @@ The WMS_ variables are used for connecting to mysql. There are three variations 
 - WMS_SCHEMA=databaseName
 
 ### Aurora mysql
+
 - WMS_HOST=mysqlURL
 - WMS_PORT=3306
 - WMS_USER=mysqlUser
@@ -111,13 +115,14 @@ The WMS_ variables are used for connecting to mysql. There are three variations 
 Same as local, but need WMS_SSL_CERT
 
 ### Aurora mysql with IAM authentication
+
 - WMS_HOST=mysqlURL
 - WMS_PORT=3306
 - WMS_USER=mysqlUser
 - WMS_SCHEMA=databaseName
 - WMS_SSL_CERT=certificateName
 
-Same as Aurora mysql, but missing WMS_PASSWORD. The code will get a token via RDS Signing. 
+Same as Aurora mysql, but missing WMS_PASSWORD. The code will get a token via RDS Signing.
 
 ## Testing
 

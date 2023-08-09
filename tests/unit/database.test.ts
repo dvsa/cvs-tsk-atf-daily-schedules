@@ -56,14 +56,7 @@ describe('Database calls', () => {
       jest.spyOn(global.Date, 'now').mockImplementationOnce(() => new Date('2021-10-10T11:02:28.637Z').valueOf());
 
       const staffSchedules: StaffSchedule[] = await database.getstaffSchedules(exportDate);
-      expect(mKnex.select).toBeCalledWith(
-        'C_ID',
-        'STAFF_ID',
-        'STATUS',
-        'EVENT_DATE',
-        'EVENT_START',
-        'EVENT_END',
-      );
+      expect(mKnex.select).toBeCalledWith('C_ID', 'STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END');
       expect(mKnex.from).toBeCalledWith('daily_booking_alterations');
       expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
       expect(mKnex.havingIn).toBeCalledWith('C_ID', ['100', '101']);
@@ -89,14 +82,7 @@ describe('Database calls', () => {
       await database.getstaffSchedules(exportDate).catch((error) => {
         expect(error).toEqual(nullError);
       });
-      expect(mKnex.select).toBeCalledWith(
-        'C_ID',
-        'STAFF_ID',
-        'STATUS',
-        'EVENT_DATE',
-        'EVENT_START',
-        'EVENT_END',
-      );
+      expect(mKnex.select).toBeCalledWith('C_ID', 'STAFF_ID', 'STATUS', 'EVENT_DATE', 'EVENT_START', 'EVENT_END');
       expect(mKnex.from).toBeCalledWith('daily_booking_alterations');
       expect(mKnex.where).toBeCalledWith('EVENT_DATE', '=', '2021-10-10');
       expect(mKnex.havingIn).toBeCalledWith('C_ID', ['100', '101']);
