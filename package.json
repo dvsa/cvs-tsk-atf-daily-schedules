@@ -48,7 +48,7 @@
     "aws-sdk": "2.1354.0",
     "dateformat": "4.6.3",
     "knex": "2.4.0",
-    "mysql2": "2.3.3",
+    "mysql2": "3.9.7",
     "source-map-support": "0.5.19",
     "winston": "3.3.3"
   },
