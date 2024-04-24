@@ -1,10 +1,12 @@
+// import { Signer } from '@aws-sdk/rds-signer';
+// import { mockClient } from 'aws-sdk-client-mock';
 import { knex, Knex } from 'knex';
 import { mocked } from 'ts-jest/utils';
-import { StaffSchedule } from '../../src/wms/Interfaces/StaffSchedule';
-import { Database } from '../../src/wms/Database';
 import { getSecret } from '../../src/filterUtils';
+import { Database } from '../../src/wms/Database';
+import { StaffSchedule } from '../../src/wms/Interfaces/StaffSchedule';
 
-jest.mock('aws-sdk/clients/rds', () => {
+jest.mock('@aws-sdk/rds-signer', () => {
   const mSignerInstance = {
     getAuthToken: jest.fn().mockReturnValue('I am a token!'),
   };

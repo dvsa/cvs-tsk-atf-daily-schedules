@@ -44,8 +44,11 @@
     "tools-setup": "echo 'nothing to do for now'"
   },
   "dependencies": {
+    "@aws-sdk/client-eventbridge": "3.556.0",
+    "@aws-sdk/client-secrets-manager": "3.556.0",
+    "@aws-sdk/client-signer": "3.556.0",
+    "@aws-sdk/rds-signer": "3.556.0",
     "aws-lambda": "1.0.6",
-    "aws-sdk": "2.1354.0",
     "dateformat": "4.6.3",
     "knex": "2.4.0",
     "mysql2": "2.3.3",
@@ -67,6 +70,7 @@
     "@types/supertest": "2.0.10",
     "@typescript-eslint/eslint-plugin": "5.3.1",
     "@typescript-eslint/parser": "5.3.1",
+    "aws-sdk-client-mock": "4.0.0",
     "commitlint-plugin-function-rules": "1.1.20",
     "concurrently": "6.3.0",
     "cross-env": "7.0.3",

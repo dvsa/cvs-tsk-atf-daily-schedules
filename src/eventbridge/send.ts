@@ -1,11 +1,11 @@
-import { EventBridge } from 'aws-sdk';
+import { EventBridgeClient, PutEventsCommand } from '@aws-sdk/client-eventbridge';
 import { EventEntry } from './EventEntry';
 import { Entries } from './Entries';
 import { SendResponse } from './SendResponse';
 import { FacillitySchedules } from '../wms/Interfaces/DynamicsCE';
 import logger from '../observability/logger';
 
-const eventbridge = new EventBridge();
+const eventbridge = new EventBridgeClient();
 const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse> => {
   logger.info('sendEvents starting');
   logger.info(`${schedules.length} ${schedules.length === 1 ? 'event' : 'events'} ready to send to eventbridge.`);
@@ -34,7 +34,7 @@ const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse
       logger.debug(`event about to be sent: ${JSON.stringify(params)}`);
       // TODO Make the putEvents run in parallel?
       // eslint-disable-next-line no-await-in-loop
-      const result = await eventbridge.putEvents(params).promise();
+      const result = await eventbridge.send(new PutEventsCommand(params));
       logger.info(`${result.Entries.length} ${result.Entries.length === 1 ? 'event' : 'events'} sent to eventbridge.`);
       sendResponse.SuccessCount++;
     } catch (error) {

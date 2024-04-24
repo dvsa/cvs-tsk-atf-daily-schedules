@@ -1,54 +1,35 @@
-import { EventBridge, Request } from 'aws-sdk';
-import { mocked } from 'ts-jest/utils';
-import { PutEventsResponse, PutEventsRequest, PutEventsResultEntry } from 'aws-sdk/clients/eventbridge';
+import { mockClient } from 'aws-sdk-client-mock';
+import {
+  EventBridgeClient, PutEventsCommand, PutEventsResultEntry,
+} from '@aws-sdk/client-eventbridge';
+import { SendResponse } from '../../src/eventbridge/SendResponse';
 import { sendEvents } from '../../src/eventbridge/send';
 import { FacillitySchedules } from '../../src/wms/Interfaces/DynamicsCE';
-import { SendResponse } from '../../src/eventbridge/SendResponse';
 
-jest.mock('aws-sdk', () => {
-  const mEventBridgeInstance = {
-    putEvents: jest.fn(),
-  };
-  const mRequestInstance = {
-    promise: jest.fn(),
-  };
-  const mEventBridge = jest.fn(() => mEventBridgeInstance);
-  const mRequest = jest.fn(() => mRequestInstance);
-
-  return { EventBridge: mEventBridge, Request: mRequest };
-});
-
-type PutEventsWithParams = (params: PutEventsRequest) => AWS.Request<PutEventsResponse, AWS.AWSError>;
-
-const mEventBridgeInstance = new EventBridge();
-const mResultInstance = new Request<PutEventsResponse, AWS.AWSError>(null, null);
-// eslint-disable-next-line @typescript-eslint/unbound-method
-mocked(mEventBridgeInstance.putEvents as PutEventsWithParams).mockImplementation(
-  (params: PutEventsRequest): AWS.Request<PutEventsResponse, AWS.AWSError> => {
-    const mPutEventsResponse: PutEventsResponse = {
-      FailedEntryCount: 0,
-      Entries: Array<PutEventsResultEntry>(params.Entries.length),
-    };
-    if (params.Entries[0].Detail === '{ "schedule": "{\\"testfacilityid\\":\\"Error\\",\\"eventdate\\":\\"Now\\"}" }') {
-      mResultInstance.promise = jest.fn().mockReturnValue(Promise.reject(new Error('Oh no!')));
-    } else {
-      mResultInstance.promise = jest.fn().mockReturnValue(Promise.resolve(mPutEventsResponse));
-    }
-    return mResultInstance;
-  },
-);
+const eventBridgeMock = mockClient(EventBridgeClient);
 
 describe('Send events', () => {
   describe('Events sent', () => {
+    beforeEach(() => {
+      eventBridgeMock.reset();
+    });
     it('GIVEN one event to send WHEN sent THEN one event is returned.', async () => {
       const mFacillitySchedules = Array<FacillitySchedules>(1);
       const mSendResponse: SendResponse = { SuccessCount: 1, FailCount: 0 };
+      eventBridgeMock.on(PutEventsCommand).resolves({
+        FailedEntryCount: 0,
+        Entries: Array<PutEventsResultEntry>(1),
+      });
       await expect(sendEvents(mFacillitySchedules)).resolves.toEqual(mSendResponse);
     });
 
     it('GIVEN two events to send WHEN sent THEN two events are returned.', async () => {
       const mFacillitySchedules = Array<FacillitySchedules>(2);
       const mSendResponse: SendResponse = { SuccessCount: 2, FailCount: 0 };
+      eventBridgeMock.on(PutEventsCommand).resolves({
+        FailedEntryCount: 0,
+        Entries: Array<PutEventsResultEntry>(2),
+      });
       await expect(sendEvents(mFacillitySchedules)).resolves.toEqual(mSendResponse);
     });
 
@@ -56,8 +37,16 @@ describe('Send events', () => {
       const mFacillitySchedules = Array<FacillitySchedules>(6);
       const errorFacillitySchedules: FacillitySchedules = { testfacilityid: 'Error', eventdate: 'Now' };
       mFacillitySchedules[0] = errorFacillitySchedules;
+      eventBridgeMock.on(PutEventsCommand).callsFake((params: { Entries: [{ Detail }] }) => {
+        if (params.Entries[0].Detail !== '{ "schedule": "undefined" }') {
+          return new Error('oh no');
+        }
+        return { Entries: [{}] };
+      });
+
       const mSendResponse: SendResponse = { SuccessCount: 5, FailCount: 1 };
       await expect(sendEvents(mFacillitySchedules)).resolves.toEqual(mSendResponse);
+      console.log(eventBridgeMock.commandCalls(PutEventsCommand));
     });
   });
 });
