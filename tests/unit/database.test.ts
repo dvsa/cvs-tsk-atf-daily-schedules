@@ -1,5 +1,3 @@
-// import { Signer } from '@aws-sdk/rds-signer';
-// import { mockClient } from 'aws-sdk-client-mock';
 import { knex, Knex } from 'knex';
 import { mocked } from 'ts-jest/utils';
 import { getSecret } from '../../src/filterUtils';
