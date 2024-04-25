@@ -46,7 +46,6 @@ describe('Send events', () => {
 
       const mSendResponse: SendResponse = { SuccessCount: 5, FailCount: 1 };
       await expect(sendEvents(mFacillitySchedules)).resolves.toEqual(mSendResponse);
-      console.log(eventBridgeMock.commandCalls(PutEventsCommand));
     });
   });
 });
