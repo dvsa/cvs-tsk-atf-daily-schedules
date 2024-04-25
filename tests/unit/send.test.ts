@@ -35,8 +35,7 @@ describe('Send events', () => {
 
     it('GIVEN an issue with eventbridge WHEN 6 events are sent and 1 fails THEN the failure is in the response.', async () => {
       const mFacillitySchedules = Array<FacillitySchedules>(6);
-      const errorFacillitySchedules: FacillitySchedules = { testfacilityid: 'Error', eventdate: 'Now' };
-      mFacillitySchedules[0] = errorFacillitySchedules;
+      mFacillitySchedules[0] = { testfacilityid: 'Error', eventdate: 'Now' };
       eventBridgeMock.on(PutEventsCommand).callsFake((params: { Entries: [{ Detail }] }) => {
         if (params.Entries[0].Detail !== '{ "schedule": "undefined" }') {
           return new Error('oh no');
