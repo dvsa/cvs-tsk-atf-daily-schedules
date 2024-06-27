@@ -1,4 +1,4 @@
-import { EventBridge } from 'aws-sdk';
+import { EventBridge } from '@aws-sdk/client-eventbridge';
 import { EventEntry } from './EventEntry';
 import { Entries } from './Entries';
 import { SendResponse } from './SendResponse';
@@ -34,7 +34,7 @@ const sendEvents = async (schedules: FacillitySchedules[]): Promise<SendResponse
       logger.debug(`event about to be sent: ${JSON.stringify(params)}`);
       // TODO Make the putEvents run in parallel?
       // eslint-disable-next-line no-await-in-loop
-      const result = await eventbridge.putEvents(params).promise();
+      const result = await eventbridge.putEvents(params);
       logger.info(`${result.Entries.length} ${result.Entries.length === 1 ? 'event' : 'events'} sent to eventbridge.`);
       sendResponse.SuccessCount++;
     } catch (error) {
