@@ -41,3 +41,6 @@ reports
 
 # npm audit results
 npm-audit.html 
+
+# Idea specific hidden files
+.idea/** 
