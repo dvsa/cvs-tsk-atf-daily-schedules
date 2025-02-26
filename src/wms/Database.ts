@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { Signer } from 'aws-sdk/clients/rds';
+import { Signer } from '@aws-sdk/rds-signer';
 import dateformat from 'dateformat';
 import { knex, Knex } from 'knex';
 import { getSecret } from '../filterUtils';
@@ -33,13 +33,13 @@ export class Database {
     if (process.env.WMS_PASSWORD) {
       config.password = process.env.WMS_PASSWORD;
     } else {
-      const signer = new Signer();
-      const token = signer.getAuthToken({
+      const signer = new Signer({
         region: process.env.AWS_REGION,
         hostname: process.env.WMS_HOST,
         port: parseInt(process.env.WMS_PORT, 10),
         username: process.env.WMS_USER,
       });
+      const token = signer.getAuthToken();
 
       config.authPlugins = {
         mysql_clear_password: () => () => token,
